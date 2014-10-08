@@ -35,7 +35,7 @@
 float targetValue;
 int rightArmTarget;
 int leftArmTarget;
-
+bool isRun = True;
 
 task driveBase()
 {
@@ -49,6 +49,7 @@ task driveBase()
 	float left_previousError = 0;
 	float left_speed = 0;
 	float left_sensorReading = 0;
+	float left_zero = 0;
 	//Right motor control vars
 	float right_Kp = 1.5;
 	float right_Ki = 0.000;
@@ -59,9 +60,10 @@ task driveBase()
 	float right_previousError = 0;
 	float right_speed = 0;
 	float right_sensorReading = 0;
+	float right_zero = 0;
 
 
-	while (true)
+	while (isRun) 
 	{
 		//Left side PID
 		left_sensorReading = nMotorEncoder[LB];
@@ -98,15 +100,30 @@ task driveBase()
 		 right_derivative = right_error - right_previousError;
 		 right_previousError = right_error;
 	 right_speed = right_Kp*right_error + right_Ki*right_integral + right_Kd*right_derivative;
+	 
+	 if (right_error < 6 && right_error > -6)
+	 {
+	   right_zero = right_zero + 1;
+	 }
 	 //writeDebugStreamLine("%f,%f",left_speed,targetValue);
 	 //writeDebugStreamLine("%f,%f",right_speed,targetValue);
 	 //left_speed = left_speed;
-	 writeDebugStreamLine("%f,%f, %f",right_speed,targetValue,right_sensorReading);
-	 writeDebugStreamLine("%f,%f, %f",left_speed,targetValue,left_sensorReading);
+	 writeDebugStreamLine("%f,%f, %f, %f",right_speed,targetValue,right_sensorReading,left_zero);
+	 writeDebugStreamLine("%f,%f, %f, %f",left_speed,targetValue,left_sensorReading,right_zero);
 	 motor[LB]=motor[LF]=left_speed;
-	 motor[RB]=motor[RF]=right_speed;
+	 motor[RB]=-right_speed;
+	 motor[RF]=right_speed;
 	 wait1Msec(10);
+	 if (left_error < 6 && left_error > -6)
+	 {
+	   left_zero = left_zero + 1;
+	   
+	 }
+	 if (left_zero > 8 && right_zero >8 ){
+	 		isRun = False;
+	 }
 	}
+	//isRun= False;
 }
 
 
@@ -116,7 +133,7 @@ void pre_auton()
   // Set bStopTasksBetweenModes to false if you want to keep user created tasks running between
   // Autonomous and Tele-Op modes. You will need to manage all user created tasks if set to false.
   bStopTasksBetweenModes = true;
-
+	targetValue=4000;
   rightArmTarget = 0;
   leftArmTarget = 0;
 	// All activities that occur before the competition starts
@@ -163,8 +180,14 @@ task armPID()
 	int right_armVal=0;
 
 	left_armVal = SensorValue[leftPot];
+	if (left_armVal < 70)
+	{
 	left_arm_error = leftArmTarget-left_armVal;
 	left_arm_speed = left_arm_Kp*left_arm_error;
+	}
+	else {
+		left_arm_speed = 0;
+ }
 	writeDebugStreamLine("%f,%f, %f, %f",left_arm_error,left_arm_speed,leftArmTarget,left_armVal);
 
 	right_armVal = SensorValue[rightPot];
@@ -201,7 +224,10 @@ void drive()
 	{
 		motor[ALB]=motor[ALT]=-0;
 		motor[ARB]=motor[ART]=0;
-	}
+		//rightArmTarget = SensorValue[leftPot];
+		//leftArmTarget = SensorValue[rightPot];
+		//startTask(armPID);
+		}
 
 	//Intake control
 	if (vexRT[Btn5D]== 1)
@@ -218,6 +244,10 @@ void drive()
 	{
 		motor[IR]=0;
 		motor[IL]=0;
+	}
+	if (vexRT[Btn8U]== 1)
+	{
+		startTask(driveBase);
 	}
 	/*right_armVal = SensorValue[leftPot];
 	left_armVal = SensorValue[rightPot];
@@ -242,12 +272,12 @@ task usercontrol()
 	  // .....................................................................................
 //		motor[port1]=motor[port2]=vexRT[Ch1];
 //		motor[port3]=motor[port4]=vexRT[Ch3];
-
-	/*************
-	 ***** REMEMBER TO CHANGE MOTORS TO 393 FOR ACTUAL ROBOT - TESTING WILL USE 269***** \
-	**************/
-	rightArmTarget = SensorValue[rightPot];
-  leftArmTarget = SensorValue[leftPot];
+	targetValue=4000;
+	startTask(driveBase);
+	
+		
+	//rightArmTarget = SensorValue[rightPot];
+  //leftArmTarget = SensorValue[leftPot];
 
   //rightArmTarget = 25;
   //leftArmTarget = 25;
