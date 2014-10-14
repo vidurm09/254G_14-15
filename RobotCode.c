@@ -29,19 +29,6 @@ int rightArmTarget;
 int leftArmTarget;
 bool isRun = True;
 
-void autonomousDrive(int leftSide, int rightSide)
-{
-	leftSide = leftDriveTargetValue;
-	rightSide = rightDriveTargetValue;
-	startTask(driveBasePID);
-}
-void autonomousArm(int target)
-{
-	rightArmTarget = target;
-	leftArmTarget = target;
-	startTask(armPID);
-}
-
 task driveBasePID()
 {
 	//Left motor control vars
@@ -130,6 +117,12 @@ task driveBasePID()
 	}
 	//isRun= False;
 }
+void autonomousDrive(int leftSide, int rightSide)
+{
+	leftSide = leftDriveTargetValue;
+	rightSide = rightDriveTargetValue;
+	startTask(driveBasePID);
+}
 task armPID()
 {
 	float left_arm_Kp = 1.5;
@@ -162,9 +155,12 @@ task armPID()
 	motor[ALB]=motor[ALT]=-left_arm_speed;
 	motor[ARB]=motor[ART]=right_arm_speed;
 }
-
-
-
+void autonomousArm(int target)
+{
+	rightArmTarget = target;
+	leftArmTarget = target;
+	startTask(armPID);
+}
 void pre_auton()
 {
   bStopTasksBetweenModes = true;
