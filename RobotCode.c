@@ -29,6 +29,11 @@ int rightArmTarget;
 int leftArmTarget;
 bool isRun = true;
 
+double mapRange(double a1,double a2,double b1,double b2,double s)//a1,a2 -> input range; b1,b2 -> output range; s->increment
+{
+    return b1 + (s-a1)*(b2-b1)/(a2-a1);
+}
+
 task driveBasePID()
 {
 	//Left motor control vars
