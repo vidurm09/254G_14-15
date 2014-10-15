@@ -27,9 +27,9 @@ float leftDriveTargetValue;
 float rightDriveTargetValue;
 int rightArmTarget;
 int leftArmTarget;
-bool isRun = true;
 
-double mapRange(double a1,double a2,double b1,double b2,double s)//a1,a2 -> input range; b1,b2 -> output range; s->increment
+
+float mapRange( a1,float a2,float b1,float b2,float s)//a1,a2 -> input range; b1,b2 -> output range; s->increment
 {
     return b1 + (s-a1)*(b2-b1)/(a2-a1);
 }
@@ -59,6 +59,7 @@ task driveBasePID()
 	float right_sensorReading = 0;
 	float right_zero = 0;
 
+	bool isRun = true;
 
 	while (isRun) 
 	{
@@ -117,7 +118,7 @@ task driveBasePID()
 	   
 	 }
 	 if (left_zero > 8 && right_zero >8 ){
-	 		isRun = False;
+	 		isRun = false;
 	 }
 	}
 	//isRun= False;
@@ -142,38 +143,54 @@ task armPID()
 	float left_arm_error = 0;
 	float left_arm_speed = 0;
 	int left_armVal=0;
+	int left_arm_zero = 0;
 
 	float right_arm_Kp = 1.5;
 	float right_arm_error = 0;
 	float right_arm_speed = 0;
 	int right_armVal=0;
-
-	left_armVal = SensorValue[leftPot];
-	if (left_armVal < 70)
+	int right_arm_zero = 0;
+	
+	bool isArm = true;
+	
+	while(isArm)
 	{
-	left_arm_error = leftArmTarget-left_armVal;
-	left_arm_speed = left_arm_Kp*left_arm_error;
-	}
-	else 
-	{
-		left_arm_speed = 0;
-	}
-	writeDebugStreamLine("%f,%f, %f, %f",left_arm_error,left_arm_speed,leftArmTarget,left_armVal);
+		left_armVal = SensorValue[leftPot];
 
-	right_armVal = SensorValue[rightPot];
-	right_arm_error = rightArmTarget-right_armVal;
-	right_arm_speed = right_arm_Kp*right_arm_error;
-	writeDebugStreamLine("%f,%f, %f, %f",right_arm_error,right_arm_speed,rightArmTarget,right_armVal);
+		left_arm_error = leftArmTarget-left_armVal;
+		left_arm_speed = left_arm_Kp*left_arm_error;
 
-	motor[ALB]=motor[ALT]=-left_arm_speed;
-	motor[ARB]=motor[ART]=right_arm_speed;
+		writeDebugStreamLine("%f,%f, %f, %f",left_arm_error,left_arm_speed,leftArmTarget,left_armVal);
+	
+		right_armVal = SensorValue[rightPot];
+		right_arm_error = rightArmTarget-right_armVal;
+		right_arm_speed = right_arm_Kp*right_arm_error;
+		writeDebugStreamLine("%f,%f, %f, %f",right_arm_error,right_arm_speed,rightArmTarget,right_armVal);
+	
+		motor[ALB]=motor[ALT]=-left_arm_speed;
+		motor[ARB]=motor[ART]=right_arm_speed;
+		
+		if (left_arm_error < 6 && left_arm_error > -6)
+	 {
+	   left_arm_zero = left_arm_zero + 1;
+	   
+	 }
+	 if (right_arm_error < 6 && right_arm_error > -6)
+	 {
+	   right_arm_zero = right_arm_zero + 1;
+	 }
+	 if (left_arm_zero > 8 && right_arm_zero >8 ){
+	 		isArm = false;
+	 }
+		
+	}
 }
 
 void autonomousArm(int target)
 {
 	rightArmTarget = target;
 	leftArmTarget = target;
-	StartTask(armPID);
+	startTask(armPID);
 }
 
 
@@ -248,7 +265,7 @@ task usercontrol()
 {
 	while (true)
 	{
-		
+		autonomousArm(30);
 		//drive();
 		
 	}
