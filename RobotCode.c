@@ -29,7 +29,7 @@ int rightArmTarget;
 int leftArmTarget;
 
 
-float mapRange( a1,float a2,float b1,float b2,float s)//a1,a2 -> input range; b1,b2 -> output range; s->increment
+float mapRange(float a1,float a2,float b1,float b2,float s)//a1,a2 -> input range; b1,b2 -> output range; s->value input
 {
     return b1 + (s-a1)*(b2-b1)/(a2-a1);
 }
