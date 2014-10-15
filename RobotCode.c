@@ -27,7 +27,7 @@ float leftDriveTargetValue;
 float rightDriveTargetValue;
 int rightArmTarget;
 int leftArmTarget;
-bool isRun = True;
+bool isRun = true;
 
 task driveBasePID()
 {
@@ -119,10 +119,18 @@ task driveBasePID()
 }
 void autonomousDrive(int leftSide, int rightSide)
 {
-	leftSide = leftDriveTargetValue;
-	rightSide = rightDriveTargetValue;
+	leftDriveTargetValue = leftSide;
+	 rightDriveTargetValue = rightSide;
 	startTask(driveBasePID);
 }
+void drivePID(float rightInches, float leftInches)
+{
+	int rightTarget = (rightInches)/((3.14*4)/392);
+	int leftTarget = (leftInches)/((3.14*4)/392);
+	writeDebugStreamLine("%f,%f",rightTarget,leftTarget);
+	autonomousDrive(leftTarget, rightTarget);
+}
+
 task armPID()
 {
 	float left_arm_Kp = 1.5;
@@ -155,12 +163,15 @@ task armPID()
 	motor[ALB]=motor[ALT]=-left_arm_speed;
 	motor[ARB]=motor[ART]=right_arm_speed;
 }
+
 void autonomousArm(int target)
 {
 	rightArmTarget = target;
 	leftArmTarget = target;
-	startTask(armPID);
+	StartTask(armPID);
 }
+
+
 void pre_auton()
 {
   bStopTasksBetweenModes = true;
@@ -222,10 +233,6 @@ void drive()
 		motor[IR]=0;
 		motor[IL]=0;
 	}
-	if (vexRT[Btn8U]== 1)
-	{
-		startTask(driveBase);
-	}
 	/*right_armVal = SensorValue[leftPot];
 	left_armVal = SensorValue[rightPot];
 	armPID(right_armVal,left_armVal);*/
@@ -234,26 +241,10 @@ void drive()
 
 task usercontrol()
 {
-	// User control code here, inside the loop
-	//targetValue = 10000;
-	//startTask(driveBase);
-	//startTask(arm);
-	//startTask(drive);
 	while (true)
 	{
-//		motor[port1]=motor[port2]=vexRT[Ch1];
-//		motor[port3]=motor[port4]=vexRT[Ch3];
-		autonomousDrive(1500, 750);
-	
 		
-	//rightArmTarget = SensorValue[rightPot];
-  //leftArmTarget = SensorValue[leftPot];
-
-  //rightArmTarget = 25;
-  //leftArmTarget = 25;
-  //startTask(armPID);
-	drive();
-
-	  UserControlCodePlaceholderForTesting(); // Remove this function call once you have "real" code.
+		//drive();
+		
 	}
 }
