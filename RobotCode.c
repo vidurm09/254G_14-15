@@ -30,7 +30,18 @@ float leftDriveTargetValue;
 float rightDriveTargetValue;
 int rightArmTarget;
 int leftArmTarget;
-
+float currAngle;
+float currLeftDist;
+float currRightDist;
+float armAngle;
+float targetLeftDist;
+float targetRightDist;
+float armPow;
+bool armMove;
+bool armA;
+bool driveA;
+float potTest;
+float inte;
 
 float mapRange(float a1,float a2,float b1,float b2,float s)//a1,a2 -> input range; b1,b2 -> output range; s->value input
 {
@@ -128,19 +139,55 @@ task driveBasePID()
 }
 void autonomousDrive(int leftSide, int rightSide)
 {
-	leftDriveTargetValue = leftSide;
+	 leftDriveTargetValue = leftSide;
 	 rightDriveTargetValue = rightSide;
 	startTask(driveBasePID);
 }
-void drivePID(float rightInches, float leftInches)
+void drivePID(float leftInches, float rightInches)
 {
 	int rightTarget = (rightInches)/((3.14*4)/392);
 	int leftTarget = (leftInches)/((3.14*4)/392);
-	writeDebugStreamLine("%f,%f",rightTarget,leftTarget);
+	writeDebugStreamLine("%f,%f,%f,%f",rightTarget,leftTarget,rightInches,leftInches);
 	autonomousDrive(leftTarget, rightTarget);
 }
+float getArm()
+{
+	float value = (nMotorEncoder[ALT]+nMotorEncoder[ART])/4;
+	return ((value/7.0)*360/392.0);
+}
+void setArm(int power)
+{
+	motor[ARB]=motor[ALB]=motor[ALT]=motor[ART]=power;
+}
+task arm()
+{
+	float kP = 14;
+	float kD = 50;
+	float kI = 0.0;
+inte = 0;
+float lastError = 0;
+while(true)
+{
+	currAngle = getArm();
+	float error = armAngle-currAngle;
+	float der = (error-lastError);
+	inte = inte+error;
+	armPow = error*kP+der*kD+inte*kI;
+	/*if(SensorValue[zero]&&armPow<0)
+	{
+		armPow = 0;
+	}*/
+	setArm(armPow);
+	lastError = error;
+	if(abs(error)<=1&&abs(der)<=1)
+	{
+		armA=false;
+		inte = 0;
+	}
+}
+}
 
-task armPID()
+/*task armPID()
 {
 	float left_arm_Kp = 1.5;
 	float left_arm_error = 0;
@@ -195,7 +242,7 @@ void autonomousArm(int target)
 	leftArmTarget = target;
 	startTask(armPID);
 }
-
+*/
 
 void pre_auton()
 {
@@ -266,6 +313,8 @@ void drive()
 
 task usercontrol()
 {
+	drivePID(50,75);
+	//startTask(arm);
 	while (true)
 	{
 		//drive();
