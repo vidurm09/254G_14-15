@@ -123,10 +123,6 @@ void drive()
 		motor[IR]=0;
 		motor[IL]=0;
 	}
-	if (vexRT[Btn8U]== 1)
-	{
-		startTask(driveBase);
-	}
 	/*right_armVal = SensorValue[leftPot];
 	left_armVal = SensorValue[rightPot];
 	armPID(right_armVal,left_armVal);*/
