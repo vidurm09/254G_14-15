@@ -75,7 +75,7 @@ task driveBasePID()
 
 	bool isRun = true;
 
-	while (isRun) 
+	while (isRun)
 	{
 		//Left side PID
 		left_sensorReading = nMotorEncoder[LB];
@@ -112,7 +112,7 @@ task driveBasePID()
 		 right_derivative = right_error - right_previousError;
 		 right_previousError = right_error;
 	 right_speed = right_Kp*right_error + right_Ki*right_integral + right_Kd*right_derivative;
-	 
+
 	 if (right_error < 6 && right_error > -6)
 	 {
 	   right_zero = right_zero + 1;
@@ -129,7 +129,7 @@ task driveBasePID()
 	 if (left_error < 6 && left_error > -6)
 	 {
 	   left_zero = left_zero + 1;
-	   
+
 	 }
 	 if (left_zero > 8 && right_zero >8 ){
 	 		isRun = false;
@@ -152,18 +152,21 @@ void drivePID(float leftInches, float rightInches)
 }
 float getArm()
 {
-	float value = (nMotorEncoder[ALT]+nMotorEncoder[ART])/4;
+	float value = -(nMotorEncoder[ALT]+nMotorEncoder[ART])/4;
 	return ((value/7.0)*360/392.0);
 }
 void setArm(int power)
 {
-	motor[ARB]=motor[ALB]=motor[ALT]=motor[ART]=power;
+	motor[ALB]=-power;
+	motor[ARB] = power;
+	motor[ALT] = -power;
+	motor[ART] = power;
 }
 task arm()
 {
-	float kP = 14;
-	float kD = 50;
-	float kI = 0.0;
+	float kP = 10;
+	float kD = 0;
+	float kI = 0;
 inte = 0;
 float lastError = 0;
 while(true)
@@ -172,12 +175,13 @@ while(true)
 	float error = armAngle-currAngle;
 	float der = (error-lastError);
 	inte = inte+error;
-	armPow = error*kP+der*kD+inte*kI;
+	armPow = error*kP;
 	/*if(SensorValue[zero]&&armPow<0)
 	{
 		armPow = 0;
 	}*/
 	setArm(armPow);
+	writeDebugStreamLine("%f\n", armPow);
 	lastError = error;
 	if(abs(error)<=1&&abs(der)<=1)
 	{
@@ -200,9 +204,9 @@ while(true)
 	float right_arm_speed = 0;
 	int right_armVal=0;
 	int right_arm_zero = 0;
-	
+
 	bool isArm = true;
-	
+
 	while(isArm)
 	{
 		left_armVal = SensorValue[leftPot];
@@ -211,19 +215,19 @@ while(true)
 		left_arm_speed = left_arm_Kp*left_arm_error;
 
 		writeDebugStreamLine("%f,%f, %f, %f",left_arm_error,left_arm_speed,leftArmTarget,left_armVal);
-	
+
 		right_armVal = SensorValue[rightPot];
 		right_arm_error = rightArmTarget-right_armVal;
 		right_arm_speed = right_arm_Kp*right_arm_error;
 		writeDebugStreamLine("%f,%f, %f, %f",right_arm_error,right_arm_speed,rightArmTarget,right_armVal);
-	
+
 		motor[ALB]=motor[ALT]=-left_arm_speed;
 		motor[ARB]=motor[ART]=right_arm_speed;
-		
+
 		if (left_arm_error < 6 && left_arm_error > -6)
 	 {
 	   left_arm_zero = left_arm_zero + 1;
-	   
+
 	 }
 	 if (right_arm_error < 6 && right_arm_error > -6)
 	 {
@@ -232,7 +236,7 @@ while(true)
 	 if (left_arm_zero > 8 && right_arm_zero >8 ){
 	 		isArm = false;
 	 }
-		
+
 	}
 }
 
@@ -271,19 +275,19 @@ void drive()
   //Arm control
   if (vexRT[Btn6D]== 1)
 	{
-		motor[ALB]=motor[ALT]=127;
-		motor[ARB]=motor[ART]=-127;
+		setArm(-127);
+		//armAngle = getArm()+10;
 	}
 	else if (vexRT[Btn6U] == 1)
 	{
-		motor[ALB]=motor[ALT]=-127;
-		motor[ARB]=motor[ART]=127;
-		armLoop = 0;
+		setArm(127);
+		//armAngle = getArm()-10;
+		//armLoop = 0;
 	}
 	else
 	{
-		motor[ALB]=motor[ALT]=-0;
-		motor[ARB]=motor[ART]=0;
+		setArm(0);
+
 		//rightArmTarget = SensorValue[leftPot];
 		//leftArmTarget = SensorValue[rightPot];
 		//startTask(armPID);
@@ -313,18 +317,17 @@ void drive()
 
 task usercontrol()
 {
-	drivePID(50,75);
-	//startTask(arm);
+	startTask(arm);
+	//drivePID(50,75);
 	while (true)
 	{
 		//drive();
-		/*
-			  _   _     _   _   _   _   _  
-			 / \ / \   / \ / \ / \ / \ / \ 
+			/*
+				_   _     _   _   _   _   _
+			 / \ / \   / \ / \ / \ / \ / \
 			( H | I ) ( V | I | D | U | R )
-			 \_/ \_/   \_/ \_/ \_/ \_/ \_/ 
-
+			 \_/ \_/   \_/ \_/ \_/ \_/ \_/
 		*/
-		
+		armAngle = 60;
 	}
 }
