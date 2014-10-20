@@ -155,6 +155,7 @@ float getArm()
 	float value = -(nMotorEncoder[ALT]+nMotorEncoder[ART])/4;
 	return ((value/7.0)*360/392.0);
 }
+
 void setArm(int power)
 {
 	motor[ALB]=-power;
@@ -191,62 +192,6 @@ while(true)
 }
 }
 
-/*task armPID()
-{
-	float left_arm_Kp = 1.5;
-	float left_arm_error = 0;
-	float left_arm_speed = 0;
-	int left_armVal=0;
-	int left_arm_zero = 0;
-
-	float right_arm_Kp = 1.5;
-	float right_arm_error = 0;
-	float right_arm_speed = 0;
-	int right_armVal=0;
-	int right_arm_zero = 0;
-
-	bool isArm = true;
-
-	while(isArm)
-	{
-		left_armVal = SensorValue[leftPot];
-
-		left_arm_error = leftArmTarget-left_armVal;
-		left_arm_speed = left_arm_Kp*left_arm_error;
-
-		writeDebugStreamLine("%f,%f, %f, %f",left_arm_error,left_arm_speed,leftArmTarget,left_armVal);
-
-		right_armVal = SensorValue[rightPot];
-		right_arm_error = rightArmTarget-right_armVal;
-		right_arm_speed = right_arm_Kp*right_arm_error;
-		writeDebugStreamLine("%f,%f, %f, %f",right_arm_error,right_arm_speed,rightArmTarget,right_armVal);
-
-		motor[ALB]=motor[ALT]=-left_arm_speed;
-		motor[ARB]=motor[ART]=right_arm_speed;
-
-		if (left_arm_error < 6 && left_arm_error > -6)
-	 {
-	   left_arm_zero = left_arm_zero + 1;
-
-	 }
-	 if (right_arm_error < 6 && right_arm_error > -6)
-	 {
-	   right_arm_zero = right_arm_zero + 1;
-	 }
-	 if (left_arm_zero > 8 && right_arm_zero >8 ){
-	 		isArm = false;
-	 }
-
-	}
-}
-
-void autonomousArm(int target)
-{
-	rightArmTarget = target;
-	leftArmTarget = target;
-	startTask(armPID);
-}
-*/
 
 void pre_auton()
 {
