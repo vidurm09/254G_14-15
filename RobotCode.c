@@ -10,8 +10,8 @@
 #pragma config(Motor,  port3,           RB,            tmotorVex393_MC29, openLoop, encoderPort, I2C_2)
 #pragma config(Motor,  port4,           RF,            tmotorVex393_MC29, openLoop, reversed)
 #pragma config(Motor,  port5,           ALB,           tmotorVex393_MC29, openLoop)
-#pragma config(Motor,  port6,           ALT,           tmotorVex393_MC29, openLoop, encoderPort, I2C_4)
-#pragma config(Motor,  port7,           ART,           tmotorVex393_MC29, openLoop, reversed, encoderPort, I2C_3)
+#pragma config(Motor,  port6,           ALT,           tmotorVex393_MC29, openLoop, encoderPort, I2C_3)
+#pragma config(Motor,  port7,           ART,           tmotorVex393_MC29, openLoop, reversed, encoderPort, I2C_4)
 #pragma config(Motor,  port8,           ARB,           tmotorVex393_MC29, openLoop, reversed)
 #pragma config(Motor,  port9,           IL,            tmotorVex393_MC29, openLoop)
 #pragma config(Motor,  port10,          IR,            tmotorVex393_HBridge, openLoop)
@@ -30,18 +30,22 @@ float leftDriveTargetValue;
 float rightDriveTargetValue;
 int rightArmTarget;
 int leftArmTarget;
-float currAngle;
+float left_currAngle;
+float right_currAngle;
 float currLeftDist;
 float currRightDist;
-float armAngle;
+float left_armAngle;
+float right_armAngle;
 float targetLeftDist;
 float targetRightDist;
-float armPow;
+float left_armPow;
+float right_armPow;
 bool armMove;
 bool armA;
 bool driveA;
 float potTest;
-float inte;
+float right_inte;
+float left_inte;
 
 float mapRange(float a1,float a2,float b1,float b2,float s)//a1,a2 -> input range; b1,b2 -> output range; s->value input
 {
@@ -150,45 +154,88 @@ void drivePID(float leftInches, float rightInches)
 	writeDebugStreamLine("%f,%f,%f,%f",rightTarget,leftTarget,rightInches,leftInches);
 	autonomousDrive(leftTarget, rightTarget);
 }
-float getArm()
+
+float getRightArm()
 {
-	float value = -(nMotorEncoder[ALT]+nMotorEncoder[ART])/4;
+	float value = (nMotorEncoder[ART])/2;
 	return ((value/7.0)*360/392.0);
 }
 
-void setArm(int power)
+float getLeftArm()
 {
-	motor[ALB]=-power;
+	float value = (nMotorEncoder[ALT])/2;
+	return ((value/7.0)*360/392.0);
+}
+
+void setRightArm(int power)
+{
 	motor[ARB] = power;
-	motor[ALT] = -power;
 	motor[ART] = power;
 }
+void setLeftArm(int power)
+{
+	motor[ALB]=-power;
+	motor[ALT] = -power;
+}
+
 task arm()
 {
 	float kP = 10;
 	float kD = 0;
 	float kI = 0;
-inte = 0;
-float lastError = 0;
+right_inte = 0;
+left_inte = 0;
+float left_lastError = 0;
+float right_lastError = 0;
 while(true)
 {
-	currAngle = getArm();
+	/*currAngle = getArm();
 	float error = armAngle-currAngle;
 	float der = (error-lastError);
 	inte = inte+error;
-	armPow = error*kP;
+	armPow = error*kP;*/
+	
+	right_currAngle = getRightArm();
+	float right_error = right_armAngle-right_currAngle;
+	float right_der = (right_error-right_lastError);
+	right_inte = right_inte+right_error;
+	right_armPow = right_error*kP;
+	
+	left_currAngle = getLeftArm();
+	float left_error = left_armAngle-left_currAngle;
+	float left_der = (left_error-left_lastError);
+	left_inte = left_inte+left_error;
+	left_armPow = left_error*kP;
 	/*if(SensorValue[zero]&&armPow<0)
 	{
 		armPow = 0;
 	}*/
-	setArm(armPow);
-	writeDebugStreamLine("%f\n", armPow);
-	lastError = error;
+	setLeftArm(left_armPow);
+	setRightArm(right_armPow);
+	writeDebugStreamLine("Left Power is %f,Left Error is %f\n,", left_armPow, left_error);
+	writeDebugStreamLine("Right Power is %f,Left Error is %f\n,", right_armPow, right_error);
+	/*lastError = error;
 	if(abs(error)<=1&&abs(der)<=1)
 	{
 		armA=false;
 		inte = 0;
+	}*/
+	
+	left_lastError = left_error;
+	if(abs(left_error)<=1&&abs(left_der)<=1)
+	{
+		armA=false;
+		left_inte = 0;
 	}
+	
+	right_lastError = right_error;
+	if(abs(right_error)<=1&&abs(right_der)<=1)
+	{
+		armA=false;
+		right_inte = 0;
+	}
+	
+
 }
 }
 
@@ -220,18 +267,21 @@ void drive()
   //Arm control
   if (vexRT[Btn6D]== 1)
 	{
-		setArm(-127);
+		setLeftArm(-127);
+		setRightArm(-127);
 		//armAngle = getArm()+10;
 	}
 	else if (vexRT[Btn6U] == 1)
 	{
-		setArm(127);
+		setRightArm(127);
+		setLeftArm(127);
 		//armAngle = getArm()-10;
 		//armLoop = 0;
 	}
 	else
 	{
-		setArm(0);
+		setRightArm(0);
+		setLeftArm(0);
 
 		//rightArmTarget = SensorValue[leftPot];
 		//leftArmTarget = SensorValue[rightPot];
@@ -273,6 +323,7 @@ task usercontrol()
 			( H | I ) ( V | I | D | U | R )
 			 \_/ \_/   \_/ \_/ \_/ \_/ \_/
 		*/
-		armAngle = 60;
+		left_armAngle = 30;
+		right_armAngle = 30;
 	}
 }
