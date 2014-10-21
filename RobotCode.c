@@ -183,24 +183,27 @@ task arm()
 	float kP = 10;
 	float kD = 0;
 	float kI = 0;
-right_inte = 0;
-left_inte = 0;
-float left_lastError = 0;
-float right_lastError = 0;
-while(true)
+	right_inte = 0;
+	left_inte = 0;
+	float left_lastError = 0;
+	float right_lastError = 0;
+	bool isArm = true;
+	int isLeftArm = 0;
+	int isRightArm = 0;
+while(isArm)
 {
 	/*currAngle = getArm();
 	float error = armAngle-currAngle;
 	float der = (error-lastError);
 	inte = inte+error;
 	armPow = error*kP;*/
-	
+
 	right_currAngle = getRightArm();
 	float right_error = right_armAngle-right_currAngle;
 	float right_der = (right_error-right_lastError);
 	right_inte = right_inte+right_error;
 	right_armPow = right_error*kP;
-	
+
 	left_currAngle = getLeftArm();
 	float left_error = left_armAngle-left_currAngle;
 	float left_der = (left_error-left_lastError);
@@ -220,14 +223,37 @@ while(true)
 		armA=false;
 		inte = 0;
 	}*/
+/*	if(abs(right_lastError-right_error)<2)
+	{
+		isRightArm = isRightArm + 1;	
+	}
+	else
+	{
+		isRightArm = 0;
+	}
 	
+	if(abs(left_lastError-left_error)<2)
+	{
+		isLeftArm = isLeftArm + 1;	
+	}
+	else
+	{
+		isLeftArm = 0;
+	}
+	
+	
+	if((isLeftArm >= 5)&&(isRightArm >=5))
+	{
+		isArm = false;
+	}
+	*/
 	left_lastError = left_error;
 	if(abs(left_error)<=1&&abs(left_der)<=1)
 	{
 		armA=false;
 		left_inte = 0;
 	}
-	
+
 	right_lastError = right_error;
 	if(abs(right_error)<=1&&abs(right_der)<=1)
 	{
@@ -246,6 +272,8 @@ void pre_auton()
 	targetValue=4000;
   rightArmTarget = 0;
   leftArmTarget = 0;
+  left_armAngle = 0;
+  right_armAngle = 0;
 }
 
 task autonomous()
@@ -309,11 +337,21 @@ void drive()
 	armPID(right_armVal,left_armVal);*/
 }
 
+void moveArmAuton(float rAngle, float lAngle)
+{
+	left_armAngle = rAngle;
+	right_armAngle = lAngle;
+}
 
 task usercontrol()
 {
 	startTask(arm);
 	//drivePID(50,75);
+//	left_armAngle = 30;
+//	right_armAngle = 30;
+	moveArmAuton(30,30);
+	wait1Msec(5000);
+	moveArmAuton(50,50);
 	while (true)
 	{
 		//drive();
@@ -323,7 +361,6 @@ task usercontrol()
 			( H | I ) ( V | I | D | U | R )
 			 \_/ \_/   \_/ \_/ \_/ \_/ \_/
 		*/
-		left_armAngle = 30;
-		right_armAngle = 30;
+		
 	}
 }
