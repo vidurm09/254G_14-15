@@ -1,0 +1,8 @@
+1. Turn to small post
+2. Arm up to small post
+3. Exuast to small post
+4. Arm down to ground
+5. Move Robot
+6. Forward to pick up cube
+7. Arm up  to middle-sized post
+8. Score
