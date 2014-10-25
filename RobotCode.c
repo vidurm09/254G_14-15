@@ -284,8 +284,8 @@ task autonomous()
 }
 void arcade()
 {
-  motor[leftMotor] = (vexRT[Ch2] + vexRT[Ch1])/2; // (y + x)/2
-  motor[rightMotor] = (vexRT[Ch2] - vexRT[Ch1])/2; // (y - x)/2
+  motor[LB] = motor[LF] = (vexRT[Ch2] + vexRT[Ch1])/2; // (y + x)/2
+  motor[RF] = -motor[RB] = (vexRT[Ch2] - vexRT[Ch1])/2; // (y - x)/2
 }
 void tank()
 {
@@ -300,7 +300,7 @@ void drive()
 	int armLoop = 0;
 
   arcade();
-  tank();
+  //tank();
 
   //Arm control
   if (vexRT[Btn6D]== 1)
