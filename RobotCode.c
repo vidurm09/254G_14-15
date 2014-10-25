@@ -225,23 +225,23 @@ while(isArm)
 	}*/
 /*	if(abs(right_lastError-right_error)<2)
 	{
-		isRightArm = isRightArm + 1;	
+		isRightArm = isRightArm + 1;
 	}
 	else
 	{
 		isRightArm = 0;
 	}
-	
+
 	if(abs(left_lastError-left_error)<2)
 	{
-		isLeftArm = isLeftArm + 1;	
+		isLeftArm = isLeftArm + 1;
 	}
 	else
 	{
 		isLeftArm = 0;
 	}
-	
-	
+
+
 	if((isLeftArm >= 5)&&(isRightArm >=5))
 	{
 		isArm = false;
@@ -260,7 +260,7 @@ while(isArm)
 		armA=false;
 		right_inte = 0;
 	}
-	
+
 
 }
 }
@@ -282,15 +282,25 @@ task autonomous()
 
 	AutonomousCodePlaceholderForTesting();  // Remove this function call once you have "real" code.
 }
-
+void arcade()
+{
+  motor[leftMotor] = (vexRT[Ch2] + vexRT[Ch1])/2; // (y + x)/2
+  motor[rightMotor] = (vexRT[Ch2] - vexRT[Ch1])/2; // (y - x)/2
+}
+void tank()
+{
+  motor[RF]=vexRT[Ch2];
+  motor[RB]=-vexRT[Ch2];
+  motor[LB]=motor[LF]=vexRT[Ch3];
+}
 void drive()
 {
 	//int right_armVal;
 	//int left_armVal;
 	int armLoop = 0;
-  motor[RF]=vexRT[Ch2];
-  motor[RB]=-vexRT[Ch2];
-  motor[LB]=motor[LF]=vexRT[Ch3];
+
+  arcade();
+  tank();
 
   //Arm control
   if (vexRT[Btn6D]== 1)
@@ -361,6 +371,6 @@ task usercontrol()
 			( H | I ) ( V | I | D | U | R )
 			 \_/ \_/   \_/ \_/ \_/ \_/ \_/
 		*/
-		
+
 	}
 }
