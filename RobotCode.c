@@ -346,6 +346,18 @@ void drive()
 		motor[IR]=0;
 		motor[IL]=0;
 	}
+
+	if (VexRT[Btn8U] == 1)
+	{
+	left_armAngle = 30;
+	right_armAngle = 30;
+	}
+	else if (VexRT[Btn8D] ==1)
+{
+	left_armAngle = 0;
+	right_armAngle = 0;
+
+}
 	/*right_armVal = SensorValue[leftPot];
 	left_armVal = SensorValue[rightPot];
 	armPID(right_armVal,left_armVal);*/
