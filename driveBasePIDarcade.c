@@ -56,8 +56,6 @@ float mapRange(float a1,float a2,float b1,float b2,float s)//a1,a2 -> input rang
     return b1 + (s-a1)*(b2-b1)/(a2-a1);
 }
 
-//float arcadeExp(
-
 task driveBasePID()
 {
 	//Left motor control vars
@@ -286,16 +284,29 @@ void pre_auton()
   right_armAngle = 0;
 }
 
-
+void arcade()
+{
+	motor[LB] = (vexRT[Ch3] + vexRT[Ch1]);
+	motor[LF] = (vexRT[Ch3] + vexRT[Ch1]);
+	motor[RF] = (vexRT[Ch3] - vexRT[Ch1]);
+	motor[RB] = -(vexRT[Ch3] - vexRT[Ch1]);
+}
+void tank()
+{
+	motor[RF]=vexRT[Ch2];
+  motor[RB]=-vexRT[Ch2];
+  motor[LB]=motor[LF]=vexRT[Ch3];
+}
 
 void drive()
 {
 	//int right_armVal;
 	//int left_armVal;
+
+
 	int armLoop = 0;
-  motor[RF]=vexRT[Ch2];
-  motor[RB]=-vexRT[Ch2];
-  motor[LB]=motor[LF]=vexRT[Ch3];
+  //tank();
+	arcade();
 
   //Arm control
   if (vexRT[Btn6D]== 1)
@@ -367,6 +378,11 @@ void autonRun1()
 	moveArmAuton(-5,-5);
 	//autonomousDrive(-300, -300);
 	wait1Msec(500);
+	motor[LB]=motor[LF]=-120;
+	 motor[RB]=120;
+	 motor[RF]=-120;
+	 wait1Msec(500);
+ motor[LB]=motor[LF]=motor[RB]=motor[RF]=0;
 	autonIntake(-127,0);
 	wait1Msec(2000);
 	autonIntake(0,0);
@@ -405,15 +421,15 @@ void autonTesting()
 }
 task usercontrol()
 {
-	//artTask(arm);
-	//artTask(driveBasePID);
-	//tonRun1();
+ // Remove this function call once you have "real" code.
+	//startTask(arm);
+	//startTask(driveBasePID);
+	//autonRun1();
 	stopTask(arm);
 	stopTask(driveBasePID):
 	while (true)
 	{
 		drive();
-
 			/*
 				_   _     _   _   _   _   _
 			 / \ / \   / \ / \ / \ / \ / \
