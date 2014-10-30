@@ -284,6 +284,10 @@ void pre_auton()
   right_armAngle = 0;
 }
 
+int rampUp(float in){
+    return (int)ceil((in*in)/127.0);
+}
+
 void arcade()
 {
 	motor[LB] = (vexRT[Ch3] + vexRT[Ch1]);
