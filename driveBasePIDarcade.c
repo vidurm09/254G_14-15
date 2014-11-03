@@ -429,8 +429,9 @@ task usercontrol()
 	//startTask(arm);
 	//startTask(driveBasePID);
 	//autonRun1();
-	stopTask(arm);
-	stopTask(driveBasePID):
+	//autonTesting();
+	//stopTask(arm);
+	//stopTask(driveBasePID);
 	while (true)
 	{
 		drive();
