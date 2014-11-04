@@ -285,15 +285,17 @@ void pre_auton()
 }
 
 int rampUp(float in){
-    return (int)ceil((in*in)/127.0);
+    return (int)ceil((in*in*in)/127.0);
 }
 
 void arcade()
 {
-	motor[LB] = (vexRT[Ch3] + vexRT[Ch1]);
-	motor[LF] = (vexRT[Ch3] + vexRT[Ch1]);
-	motor[RF] = (vexRT[Ch3] - vexRT[Ch1]);
-	motor[RB] = -(vexRT[Ch3] - vexRT[Ch1]);
+	int channelThree = rampUp(vexRT[Ch3]);
+	int channelOne = rampUp(vexRT[Ch1]);
+	motor[LB] = (channelThree + channelOne);
+	motor[LF] = (channelThree + channelOne);
+	motor[RF] = (channelThree - channelOne);
+	motor[RB] = -(channelThree - channelOne);
 }
 void tank()
 {
@@ -433,9 +435,9 @@ task usercontrol()
 	//startTask(arm);
 	//startTask(driveBasePID);
 //	dropCube();
-	dropSmallPole();
-	stopTask(arm);
-	stopTask(driveBasePID);
+	//dropSmallPole();
+	//stopTask(arm);
+	//stopTask(driveBasePID);
 	while (true)
 	{
 		drive();
