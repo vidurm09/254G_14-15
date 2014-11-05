@@ -288,7 +288,7 @@ int rampUp(float in){
     return (int)ceil((in*in*in)/127.0);
 }
 
-void arcade()
+void arcadeRampUp()
 {
 	int channelThree = rampUp(vexRT[Ch3]);
 	int channelOne = rampUp(vexRT[Ch1]);
@@ -296,6 +296,13 @@ void arcade()
 	motor[LF] = (channelThree + channelOne);
 	motor[RF] = (channelThree - channelOne);
 	motor[RB] = -(channelThree - channelOne);
+}
+void arcade()
+{
+	motor[LB] = (vexRT[Ch3] + vexRT[Ch1]);
+	motor[LF] = (vexRT[Ch3] + vexRT[Ch1]);
+	motor[RF] = (vexRT[Ch3] - vexRT[Ch1]);
+	motor[RB] = -(vexRT[Ch3] - vexRT[Ch1]);
 }
 void tank()
 {
@@ -429,18 +436,34 @@ void dropSmallPole()
 	 //Vidur said he wont get mad if motors dont run later 11/3/14
 }
 
+void dropMediumPole()
+{
+	//startTask(arm);
+	startTask(driveBasePID);
+	//moveArmAuton(80,80);
+	wait1Msec(2000);
+	drivePID(11,11);
+	autonIntake(-127,-127);
+	wait1Msec(2000);
+	autonIntake(0,0);
+	wait1Msec(2000);
+
+
+}
+
 task usercontrol()
 {
  // Remove this function call once you have "real" code.
 	//startTask(arm);
 	//startTask(driveBasePID);
 //	dropCube();
-	//dropSmallPole();
-	//stopTask(arm);
+//	dropSmallPole();
+	//dropMediumPole();
+//stopTask(arm);
 	//stopTask(driveBasePID);
 	while (true)
 	{
-		drive();
+		//drive();
 			/*
 				_   _     _   _   _   _   _
 			 / \ / \   / \ / \ / \ / \ / \
