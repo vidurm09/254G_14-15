@@ -1,6 +1,7 @@
 #pragma config(I2C_Usage, I2C1, i2cSensors)
 #pragma config(Sensor, in1,    rightPot,       sensorPotentiometer)
 #pragma config(Sensor, in2,    leftPot,        sensorPotentiometer)
+#pragma config(Sensor, dgtl1,  touchsensor,    sensorTouch)
 #pragma config(Sensor, I2C_1,  ,               sensorQuadEncoderOnI2CPort,    , AutoAssign)
 #pragma config(Sensor, I2C_2,  ,               sensorQuadEncoderOnI2CPort,    , AutoAssign)
 #pragma config(Sensor, I2C_3,  ,               sensorQuadEncoderOnI2CPort,    , AutoAssign)
@@ -438,15 +439,15 @@ void dropSmallPole()
 
 void dropMediumPole()
 {
-	//startTask(arm);
+	startTask(arm);
 	startTask(driveBasePID);
-	//moveArmAuton(80,80);
+	bool run = false;
+	drivePID(15,25);
+	moveArmAuton(80,80);
 	wait1Msec(2000);
-	drivePID(11,11);
 	autonIntake(-127,-127);
 	wait1Msec(2000);
 	autonIntake(0,0);
-	wait1Msec(2000);
 
 
 }
@@ -457,13 +458,20 @@ task usercontrol()
 	//startTask(arm);
 	//startTask(driveBasePID);
 //	dropCube();
-//	dropSmallPole();
+	//dropSmallPole();
 	//dropMediumPole();
-//stopTask(arm);
-	//stopTask(driveBasePID);
+stopTask(arm);
+	stopTask(driveBasePID);
 	while (true)
 	{
-		//drive();
+	drive();
+	/*if (SensorValue[touchsensor] == 1)
+	{
+		stopTask(driveBasePID);
+		motor[LB]=motor[LF]=motor[RB]=motor[RF]=0;
+		stopTask(arm);
+		motor[ALB]=motor[ALT]=motor[ARB]=motor[ALB]=0;
+	}
 			/*
 				_   _     _   _   _   _   _
 			 / \ / \   / \ / \ / \ / \ / \
