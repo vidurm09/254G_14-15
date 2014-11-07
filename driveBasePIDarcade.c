@@ -423,7 +423,7 @@ task autonomous()
 	startTask(driveBasePID);
 	dropCube();  // Remove this function call once you have "real" code.
 }
-void dropSmallPole()
+void dropSmallPoleRed()
 {
 	startTask(arm);
 	startTask(driveBasePID);
@@ -433,8 +433,110 @@ void dropSmallPole()
 	autonIntake(-127,-127);
 	wait1Msec(2000);
 	autonIntake(0,0);
-	 //motor[LB]=motor[LF]=motor[RB]=motor[RF]=0;
+	stopTask(arm);
+	stopTask(driveBasePID);
+
+	//motor[LB]=motor[LF]=motor[RB]=motor[RF]=0;
 	 //Vidur said he wont get mad if motors dont run later 11/3/14
+}
+
+void dropSmallPoleRed()
+{
+	startTask(arm);
+	startTask(driveBasePID);
+	drivePID(-15,-25);
+	moveArmAuton(50,50);
+	wait1Msec(2000);
+	autonIntake(-127,-127);
+	wait1Msec(2000);
+	autonIntake(0,0);
+	stopTask(arm);
+	stopTask(driveBasePID);
+
+	//motor[LB]=motor[LF]=motor[RB]=motor[RF]=0;
+	 //Vidur said he wont get mad if motors dont run later 11/3/14
+}
+
+void dropSmallPoleRed()
+{
+	startTask(arm);
+	startTask(driveBasePID);
+	drivePID(-15,-25);
+	moveArmAuton(50,50);
+	wait1Msec(2000);
+	autonIntake(-127,-127);
+	wait1Msec(2000);
+	autonIntake(0,0);
+	stopTask(arm);
+	stopTask(driveBasePID);
+
+	//motor[LB]=motor[LF]=motor[RB]=motor[RF]=0;
+	 //Vidur said he wont get mad if motors dont run later 11/3/14
+}
+
+void dropSmallPoleRed()
+{
+	startTask(arm);
+	startTask(driveBasePID);
+	drivePID(-15,-25);
+	moveArmAuton(50,50);
+	wait1Msec(2000);
+	autonIntake(-127,-127);
+	wait1Msec(2000);
+	autonIntake(0,0);
+	stopTask(arm);
+	stopTask(driveBasePID);
+
+	//motor[LB]=motor[LF]=motor[RB]=motor[RF]=0;
+	 //Vidur said he wont get mad if motors dont run later 11/3/14
+}
+
+void dropSmallPoleRed()
+{
+	startTask(arm);
+	startTask(driveBasePID);
+	drivePID(-15,-25);
+	moveArmAuton(50,50);
+	wait1Msec(2000);
+	autonIntake(-127,-127);
+	wait1Msec(2000);
+	autonIntake(0,0);
+	stopTask(arm);
+	stopTask(driveBasePID);
+
+	//motor[LB]=motor[LF]=motor[RB]=motor[RF]=0;
+	 //Vidur said he wont get mad if motors dont run later 11/3/14
+}
+
+void dropSmallPoleBlue()
+{
+	//startTask(arm);
+	//startTask(driveBasePID);
+	//drivePID(-25,-15);
+	drivePID(-50,-50);
+	moveArmAuton(50,50);
+	wait1Msec(2000);
+	autonIntake(-127,-127);
+	wait1Msec(2000);
+	autonIntake(0,0);
+	stopTask(arm);
+	stopTask(driveBasePID);
+
+	//motor[LB]=motor[LF]=motor[RB]=motor[RF]=0;
+	 //Vidur said he wont get mad if motors dont run later 11/3/14
+}
+task stopAll()
+{
+	while(true)
+{
+	if (SensorValue[touchsensor] == 1)
+	{
+		stopTask(driveBasePID);
+		motor[LB]=motor[LF]=motor[RB]=motor[RF]=0;
+		stopTask(arm);
+		motor[ALB]=motor[ALT]=motor[ARB]=motor[ALB]=0;
+	}
+}
 }
 
 void dropMediumPole()
@@ -456,22 +558,20 @@ task usercontrol()
 {
  // Remove this function call once you have "real" code.
 	//startTask(arm);
-	//startTask(driveBasePID);
+	startTask(driveBasePID);
+startTask(stopAll);
 //	dropCube();
-	//dropSmallPole();
+
 	//dropMediumPole();
-stopTask(arm);
-	stopTask(driveBasePID);
+//stopTask(arm);
+	//stopTask(driveBasePID);
+	//startTask(stopAll);
+	//dropSmallPoleBlue();
 	while (true)
 	{
-	drive();
-	/*if (SensorValue[touchsensor] == 1)
-	{
-		stopTask(driveBasePID);
-		motor[LB]=motor[LF]=motor[RB]=motor[RF]=0;
-		stopTask(arm);
-		motor[ALB]=motor[ALT]=motor[ARB]=motor[ALB]=0;
-	}
+
+	//drive();
+
 			/*
 				_   _     _   _   _   _   _
 			 / \ / \   / \ / \ / \ / \ / \
