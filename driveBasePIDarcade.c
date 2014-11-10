@@ -311,7 +311,43 @@ void tank()
   motor[RB]=-vexRT[Ch2];
   motor[LB]=motor[LF]=vexRT[Ch3];
 }
-
+void driveArm()
+{
+	if (vexRT[Btn6D]== 1)
+	{
+		setLeftArm(-127);
+		setRightArm(-127);
+	}
+	else if (vexRT[Btn6U] == 1)
+	{
+		setRightArm(127);
+		setLeftArm(127);
+	}
+	else
+	{
+		setRightArm(0);
+		setLeftArm(0);
+	}
+}
+void driveArmPID()
+{
+	if (
+	else if (vexRT[Btn6D]== 1)
+	{
+		setLeftArm(-127);
+		setRightArm(-127);
+	}
+	else if (vexRT[Btn6U] == 1)
+	{
+		setRightArm(127);
+		setLeftArm(127);
+	}
+	else
+	{
+		setRightArm(0);
+		setLeftArm(0);
+	}
+}
 void drive()
 {
 	//int right_armVal;
@@ -323,28 +359,7 @@ void drive()
 	arcade();
 
   //Arm control
-  if (vexRT[Btn6D]== 1)
-	{
-		setLeftArm(-127);
-		setRightArm(-127);
-		//armAngle = getArm()+10;
-	}
-	else if (vexRT[Btn6U] == 1)
-	{
-		setRightArm(127);
-		setLeftArm(127);
-		//armAngle = getArm()-10;
-		//armLoop = 0;
-	}
-	else
-	{
-		setRightArm(0);
-		setLeftArm(0);
-
-		//rightArmTarget = SensorValue[leftPot];
-		//leftArmTarget = SensorValue[rightPot];
-		//startTask(armPID);
-		}
+	driveArm();
 
 	//Intake control
 	if (vexRT[Btn5U]== 1)
