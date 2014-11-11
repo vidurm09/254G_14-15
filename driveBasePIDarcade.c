@@ -2,6 +2,8 @@
 #pragma config(Sensor, in1,    rightPot,       sensorPotentiometer)
 #pragma config(Sensor, in2,    leftPot,        sensorPotentiometer)
 #pragma config(Sensor, dgtl1,  touchsensor,    sensorTouch)
+#pragma config(Sensor, dgtl2,  rightArmButton, sensorDigitalIn)
+#pragma config(Sensor, dgtl3,  leftArmButton,  sensorDigitalIn)
 #pragma config(Sensor, I2C_1,  ,               sensorQuadEncoderOnI2CPort,    , AutoAssign)
 #pragma config(Sensor, I2C_2,  ,               sensorQuadEncoderOnI2CPort,    , AutoAssign)
 #pragma config(Sensor, I2C_3,  ,               sensorQuadEncoderOnI2CPort,    , AutoAssign)
@@ -199,14 +201,11 @@ task arm()
 	bool isArm = true;
 	int isLeftArm = 0;
 	int isRightArm = 0;
+	int time = 0;
+
 while(isArm)
 {
-	/*currAngle = getArm();
-	float error = armAngle-currAngle;
-	float der = (error-lastError);
-	inte = inte+error;
-	armPow = error*kP;*/
-
+	time++;
 	right_currAngle = getRightArm();
 	float right_error = right_armAngle-right_currAngle;
 	float right_der = (right_error-right_lastError);
@@ -226,36 +225,6 @@ while(isArm)
 	setRightArm(right_armPow);
 	writeDebugStreamLine("Left Power is %f,Left Error is %f\n,", left_armPow, left_error);
 	writeDebugStreamLine("Right Power is %f,Left Error is %f\n,", right_armPow, right_error);
-	/*lastError = error;
-	if(abs(error)<=1&&abs(der)<=1)
-	{
-		armA=false;
-		inte = 0;
-	}*/
-/*	if(abs(right_lastError-right_error)<2)
-	{
-		isRightArm = isRightArm + 1;
-	}
-	else
-	{
-		isRightArm = 0;
-	}
-
-	if(abs(left_lastError-left_error)<2)
-	{
-		isLeftArm = isLeftArm + 1;
-	}
-	else
-	{
-		isLeftArm = 0;
-	}
-
-
-	if((isLeftArm >= 5)&&(isRightArm >=5))
-	{
-		isArm = false;
-	}
-	*/
 	left_lastError = left_error;
 	if(abs(left_error)<=1&&abs(left_der)<=1)
 	{
@@ -329,10 +298,38 @@ void driveArm()
 		setLeftArm(0);
 	}
 }
+
 void driveArmPID()
 {
-	if (
+	if (true)
+	{
+
+	}
 	else if (vexRT[Btn6D]== 1)
+	{
+		//down
+	}
+	else if (vexRT[Btn6U] == 1)
+	{
+		//up
+	}
+	else
+	{
+		//none
+	}
+}
+void drive()
+{
+	//int right_armVal;
+	//int left_armVal;
+
+
+	int armLoop = 0;
+  //tank();
+	arcade();
+
+  //Arm control
+	if (vexRT[Btn6D]== 1)
 	{
 		setLeftArm(-127);
 		setRightArm(-127);
@@ -347,19 +344,6 @@ void driveArmPID()
 		setRightArm(0);
 		setLeftArm(0);
 	}
-}
-void drive()
-{
-	//int right_armVal;
-	//int left_armVal;
-
-
-	int armLoop = 0;
-  //tank();
-	arcade();
-
-  //Arm control
-	driveArm();
 
 	//Intake control
 	if (vexRT[Btn5U]== 1)
@@ -387,6 +371,11 @@ void drive()
 	left_armAngle = 0;
 	right_armAngle = 0;
 
+}
+if (leftArmButton == 0 || rightArmButton==0)
+{
+	setLeftArm(0);
+	setRightArm(0);
 }
 	/*right_armVal = SensorValue[leftPot];
 	left_armVal = SensorValue[rightPot];
@@ -492,7 +481,7 @@ void dropSmallPoleRed()
 void dropSmallPoleRed()
 {
 	startTask(arm);
-	startTask(driveBasePID);
+	//startTask(driveBasePID);
 	drivePID(-15,-25);
 	moveArmAuton(50,50);
 	wait1Msec(2000);
@@ -525,7 +514,7 @@ void dropSmallPoleRed()
 
 void dropSmallPoleBlue()
 {
-	//startTask(arm);
+	startTask(arm);
 	//startTask(driveBasePID);
 	//drivePID(-25,-15);
 	drivePID(-50,-50);
@@ -573,8 +562,8 @@ task usercontrol()
 {
  // Remove this function call once you have "real" code.
 	//startTask(arm);
-	startTask(driveBasePID);
-startTask(stopAll);
+	//startTask(driveBasePID);
+//startTask(stopAll);
 //	dropCube();
 
 	//dropMediumPole();
@@ -585,7 +574,7 @@ startTask(stopAll);
 	while (true)
 	{
 
-	//drive();
+		drive();
 
 			/*
 				_   _     _   _   _   _   _
