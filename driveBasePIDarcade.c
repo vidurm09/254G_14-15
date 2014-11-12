@@ -1,3 +1,4 @@
+
 #pragma config(I2C_Usage, I2C1, i2cSensors)
 #pragma config(Sensor, in1,    rightPot,       sensorPotentiometer)
 #pragma config(Sensor, in2,    leftPot,        sensorPotentiometer)
@@ -305,19 +306,22 @@ void driveArmPID()
 	{
 
 	}
-	else if (vexRT[Btn6D]== 1)
+/*	else if (vexRT[Btn6D]== 1)
 	{
 		//down
+		armAngle = armAngle - 1;
+
 	}
 	else if (vexRT[Btn6U] == 1)
 	{
-		//up
-	}
+		armAngle = armAngle +1;
+	}*/
 	else
 	{
 		//none
 	}
 }
+
 void drive()
 {
 	//int right_armVal;
@@ -327,8 +331,10 @@ void drive()
 	int armLoop = 0;
   //tank();
 	arcade();
-
+bool softStop = false;
   //Arm control
+//if (!softStop)
+//{
 	if (vexRT[Btn6D]== 1)
 	{
 		setLeftArm(-127);
@@ -344,7 +350,7 @@ void drive()
 		setRightArm(0);
 		setLeftArm(0);
 	}
-
+//}
 	//Intake control
 	if (vexRT[Btn5U]== 1)
 	{
@@ -374,8 +380,13 @@ void drive()
 }
 if (leftArmButton == 0 || rightArmButton==0)
 {
+	softStop = true;
 	setLeftArm(0);
 	setRightArm(0);
+}
+else
+{
+	softStop = false;
 }
 	/*right_armVal = SensorValue[leftPot];
 	left_armVal = SensorValue[rightPot];
@@ -561,9 +572,9 @@ void dropMediumPole()
 task usercontrol()
 {
  // Remove this function call once you have "real" code.
-	//startTask(arm);
+	startTask(arm);
 	//startTask(driveBasePID);
-//startTask(stopAll);
+	startTask(stopAll);
 //	dropCube();
 
 	//dropMediumPole();
