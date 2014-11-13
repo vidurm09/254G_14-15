@@ -285,7 +285,7 @@ void tank()
 }
 void driveArm()
 {
-	if (vexRT[Btn6D]== 1)
+	if (vexRT[Btn6D]== 1 && !softStop)
 	{
 		setLeftArm(-127);
 		setRightArm(-127);
@@ -331,10 +331,7 @@ void drive()
   //tank();
 	arcade();
   //Arm control
-	if (!softStop)
-	{
-		driveArmPIDs();
-	}
+	driveArm();
 	//Intake control
 	if (vexRT[Btn5U]== 1)
 	{
@@ -351,7 +348,7 @@ void drive()
 		motor[IR]=0;
 		motor[IL]=0;
 	}
-	if (VexRT[Btn8U] == 1)
+	if (vexRT[Btn8U] == 1)
 	{
 	left_armAngle = 30;
 	right_armAngle = 30;
@@ -365,8 +362,7 @@ void drive()
 	if (sensorValue[leftArmButton] == 0 || sensorValue[rightArmButton]==0)
 	{
 		softStop = true;
-		setLeftArm(0);
-		setRightArm(0);
+
 	}
 	else
 	{
