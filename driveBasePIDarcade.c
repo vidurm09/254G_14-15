@@ -54,6 +54,8 @@ bool driveA;
 float potTest;
 float right_inte;
 float left_inte;
+float armAngle;
+bool softStop = false;
 
 float mapRange(float a1,float a2,float b1,float b2,float s)//a1,a2 -> input range; b1,b2 -> output range; s->value input
 {
@@ -132,8 +134,8 @@ task driveBasePID()
 	 //writeDebugStreamLine("%f,%f",left_speed,targetValue);
 	 //writeDebugStreamLine("%f,%f",right_speed,targetValue);
 	 //left_speed = left_speed;
-	 writeDebugStreamLine("%f,%f, %f, %f",right_speed,targetValue,right_sensorReading,left_zero);
-	 writeDebugStreamLine("%f,%f, %f, %f",left_speed,targetValue,left_sensorReading,right_zero);
+	 //writeDebugStreamLine("%f,%f, %f, %f",right_speed,targetValue,right_sensorReading,left_zero);
+	 //writeDebugStreamLine("%f,%f, %f, %f",left_speed,targetValue,left_sensorReading,right_zero);
 	 motor[LB]=motor[LF]=left_speed;
 	 motor[RB]=-right_speed;
 	 motor[RF]=right_speed;
@@ -306,16 +308,16 @@ void driveArmPID()
 	{
 
 	}
-/*	else if (vexRT[Btn6D]== 1)
+	else if (vexRT[Btn6D]== 1)
 	{
 		//down
-		armAngle = armAngle - 1;
+		armAngle = armAngle - 0.1;
 
 	}
 	else if (vexRT[Btn6U] == 1)
 	{
-		armAngle = armAngle +1;
-	}*/
+		armAngle = armAngle + 0.1;
+	}
 	else
 	{
 		//none
@@ -326,31 +328,13 @@ void drive()
 {
 	//int right_armVal;
 	//int left_armVal;
-
-
-	int armLoop = 0;
   //tank();
 	arcade();
-bool softStop = false;
   //Arm control
-//if (!softStop)
-//{
-	if (vexRT[Btn6D]== 1)
+	if (!softStop)
 	{
-		setLeftArm(-127);
-		setRightArm(-127);
+		driveArmPIDs();
 	}
-	else if (vexRT[Btn6U] == 1)
-	{
-		setRightArm(127);
-		setLeftArm(127);
-	}
-	else
-	{
-		setRightArm(0);
-		setLeftArm(0);
-	}
-//}
 	//Intake control
 	if (vexRT[Btn5U]== 1)
 	{
@@ -378,16 +362,16 @@ bool softStop = false;
 	right_armAngle = 0;
 
 }
-if (leftArmButton == 0 || rightArmButton==0)
-{
-	softStop = true;
-	setLeftArm(0);
-	setRightArm(0);
-}
-else
-{
-	softStop = false;
-}
+	if (sensorValue[leftArmButton] == 0 || sensorValue[rightArmButton]==0)
+	{
+		softStop = true;
+		setLeftArm(0);
+		setRightArm(0);
+	}
+	else
+	{
+		softStop = false;
+	}
 	/*right_armVal = SensorValue[leftPot];
 	left_armVal = SensorValue[rightPot];
 	armPID(right_armVal,left_armVal);*/
@@ -488,7 +472,6 @@ void dropSmallPoleRed()
 	//motor[LB]=motor[LF]=motor[RB]=motor[RF]=0;
 	 //Vidur said he wont get mad if motors dont run later 11/3/14
 }
-
 void dropSmallPoleRed()
 {
 	startTask(arm);
@@ -574,7 +557,7 @@ task usercontrol()
  // Remove this function call once you have "real" code.
 	startTask(arm);
 	//startTask(driveBasePID);
-	startTask(stopAll);
+	stopTask(arm);
 //	dropCube();
 
 	//dropMediumPole();
@@ -595,5 +578,6 @@ task usercontrol()
 		*/
 		leftArmAngle = getLeftArm();
 		rightArmAngle = getRightArm();
+		writeDebugStreamLine("Left: %f, Right: %f",  getLeftArm(), getRightArm());
 	}
 }
