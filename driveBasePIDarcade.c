@@ -1,10 +1,11 @@
-
 #pragma config(I2C_Usage, I2C1, i2cSensors)
 #pragma config(Sensor, in1,    rightPot,       sensorPotentiometer)
 #pragma config(Sensor, in2,    leftPot,        sensorPotentiometer)
 #pragma config(Sensor, dgtl1,  touchsensor,    sensorTouch)
 #pragma config(Sensor, dgtl2,  rightArmButton, sensorDigitalIn)
 #pragma config(Sensor, dgtl3,  leftArmButton,  sensorDigitalIn)
+#pragma config(Sensor, dgtl4,  rightArmButtonTop, sensorDigitalIn)
+#pragma config(Sensor, dgtl5,  leftArmButtonTop, sensorNone)
 #pragma config(Sensor, I2C_1,  ,               sensorQuadEncoderOnI2CPort,    , AutoAssign)
 #pragma config(Sensor, I2C_2,  ,               sensorQuadEncoderOnI2CPort,    , AutoAssign)
 #pragma config(Sensor, I2C_3,  ,               sensorQuadEncoderOnI2CPort,    , AutoAssign)
@@ -56,10 +57,19 @@ float right_inte;
 float left_inte;
 float armAngle;
 bool softStop = false;
+bool softStopTop = false;
+int prevArmPosRight;
+int prevArmPosLeft;
 
 float mapRange(float a1,float a2,float b1,float b2,float s)//a1,a2 -> input range; b1,b2 -> output range; s->value input
 {
     return b1 + (s-a1)*(b2-b1)/(a2-a1);
+}
+
+void moveArmAuton(float rAngle, float lAngle)
+{
+	left_armAngle = rAngle;
+	right_armAngle = lAngle;
 }
 
 task driveBasePID()
@@ -127,27 +137,22 @@ task driveBasePID()
 		 right_previousError = right_error;
 	 right_speed = right_Kp*right_error + right_Ki*right_integral + right_Kd*right_derivative;
 
-	 if (right_error < 6 && right_error > -6)
+	 /*if (right_error < 6 && right_error > -6) //Comented out
 	 {
 	   right_zero = right_zero + 1;
-	 }
-	 //writeDebugStreamLine("%f,%f",left_speed,targetValue);
-	 //writeDebugStreamLine("%f,%f",right_speed,targetValue);
-	 //left_speed = left_speed;
-	 //writeDebugStreamLine("%f,%f, %f, %f",right_speed,targetValue,right_sensorReading,left_zero);
-	 //writeDebugStreamLine("%f,%f, %f, %f",left_speed,targetValue,left_sensorReading,right_zero);
+	 }*/
 	 motor[LB]=motor[LF]=left_speed;
 	 motor[RB]=-right_speed;
 	 motor[RF]=right_speed;
 	 wait1Msec(10);
-	 if (left_error < 6 && left_error > -6)
+	 /*if (left_error < 6 && left_error > -6)
 	 {
 	   left_zero = left_zero + 1;
 
 	 }
 	 if (left_zero > 8 && right_zero >8 ){
 	 		isRun = false;
-	 }
+	 }*/
 	}
 	//isRun= False;
 }
@@ -241,8 +246,6 @@ while(isArm)
 		armA=false;
 		right_inte = 0;
 	}
-
-
 }
 }
 
@@ -290,7 +293,7 @@ void driveArm()
 		setLeftArm(-127);
 		setRightArm(-127);
 	}
-	else if (vexRT[Btn6U] == 1)
+	else if (vexRT[Btn6U] == 1 && !softStopTop)
 	{
 		setRightArm(127);
 		setLeftArm(127);
@@ -304,23 +307,26 @@ void driveArm()
 
 void driveArmPID()
 {
-	if (true)
+	if (vexRT[Btn6D]== 1 && !softStop)
 	{
-
-	}
-	else if (vexRT[Btn6D]== 1)
-	{
-		//down
-		armAngle = armAngle - 0.1;
-
+		stopTask(arm)
+		setLeftArm(-127);
+		setRightArm(-127);
+		prevArmPosLeft = getLeftArm();
+		prevArmPosRight = getRightArm();
 	}
 	else if (vexRT[Btn6U] == 1)
 	{
-		armAngle = armAngle + 0.1;
+		stopTask(arm);
+		setRightArm(127);
+		setLeftArm(127);
+		prevArmPosLeft = getLeftArm();
+		prevArmPosRight = getRightArm();
 	}
 	else
 	{
-		//none
+		startTask(arm);
+		moveArmAuton(prevArmPosRight, prevArmPosLeft);
 	}
 }
 
@@ -362,21 +368,23 @@ void drive()
 	if (sensorValue[leftArmButton] == 0 || sensorValue[rightArmButton]==0)
 	{
 		softStop = true;
-
 	}
 	else
 	{
 		softStop = false;
 	}
+
+	if (sensorValue[leftArmButtonTop] == 0 || sensorValue[rightArmButtonTop]==0)
+	{
+		softStopTop = true;
+	}
+	else
+	{
+		softStopTop = false;
+	}
 	/*right_armVal = SensorValue[leftPot];
 	left_armVal = SensorValue[rightPot];
 	armPID(right_armVal,left_armVal);*/
-}
-
-void moveArmAuton(float rAngle, float lAngle)
-{
-	left_armAngle = rAngle;
-	right_armAngle = lAngle;
 }
 
 void dropCube()
@@ -537,13 +545,15 @@ void dropMediumPole()
 {
 	startTask(arm);
 	startTask(driveBasePID);
-	bool run = false;
-	drivePID(15,25);
+	//bool run = false;
+	drivePID(45,50);
+	autonIntake(127,127);
+	wait1Msec(3000);
 	moveArmAuton(80,80);
-	wait1Msec(2000);
-	autonIntake(-127,-127);
-	wait1Msec(2000);
+	//wait1Msec(2000);
 	autonIntake(0,0);
+
+
 
 
 }
@@ -551,14 +561,16 @@ void dropMediumPole()
 task usercontrol()
 {
  // Remove this function call once you have "real" code.
-	startTask(arm);
+	//startTask(arm);
 	//startTask(driveBasePID);
+
+	startTask(stopAll);
 	stopTask(arm);
 //	dropCube();
 
 	//dropMediumPole();
 //stopTask(arm);
-	//stopTask(driveBasePID);
+ stopTask(driveBasePID);
 	//startTask(stopAll);
 	//dropSmallPoleBlue();
 	while (true)
