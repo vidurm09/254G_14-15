@@ -5,7 +5,7 @@
 #pragma config(Sensor, dgtl2,  rightArmButton, sensorDigitalIn)
 #pragma config(Sensor, dgtl3,  leftArmButton,  sensorDigitalIn)
 #pragma config(Sensor, dgtl4,  rightArmButtonTop, sensorDigitalIn)
-#pragma config(Sensor, dgtl5,  leftArmButtonTop, sensorNone)
+#pragma config(Sensor, dgtl5,  leftArmButtonTop, sensorDigitalIn)
 #pragma config(Sensor, I2C_1,  ,               sensorQuadEncoderOnI2CPort,    , AutoAssign)
 #pragma config(Sensor, I2C_2,  ,               sensorQuadEncoderOnI2CPort,    , AutoAssign)
 #pragma config(Sensor, I2C_3,  ,               sensorQuadEncoderOnI2CPort,    , AutoAssign)
@@ -293,7 +293,7 @@ void driveArm()
 		setLeftArm(-127);
 		setRightArm(-127);
 	}
-	else if (vexRT[Btn6U] == 1 && !softStopTop)
+else if (vexRT[Btn6U] == 1 && !softStopTop)
 	{
 		setRightArm(127);
 		setLeftArm(127);
@@ -315,7 +315,7 @@ void driveArmPID()
 		prevArmPosLeft = getLeftArm();
 		prevArmPosRight = getRightArm();
 	}
-	else if (vexRT[Btn6U] == 1)
+	else if (vexRT[Btn6U] == 1 && !softStopTop)
 	{
 		stopTask(arm);
 		setRightArm(127);
@@ -326,7 +326,7 @@ void driveArmPID()
 	else
 	{
 		startTask(arm);
-		moveArmAuton(prevArmPosRight, prevArmPosLeft);
+		moveArmAuton(prevArmPosRight, prevArmPosLeft-1);
 	}
 }
 
@@ -337,7 +337,7 @@ void drive()
   //tank();
 	arcade();
   //Arm control
-	driveArm();
+	driveArmPID();
 	//Intake control
 	if (vexRT[Btn5U]== 1)
 	{
