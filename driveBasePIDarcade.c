@@ -261,13 +261,21 @@ void pre_auton()
 }
 
 int rampUp(float in){
-    return (int)ceil((in*in*in)/127.0);
+    return ((int)ceil((in*in*in)/127.0))/127;
 }
 
 void arcadeRampUp()
 {
 	int channelThree = rampUp(vexRT[Ch3]);
 	int channelOne = rampUp(vexRT[Ch1]);
+	/*if(channelOne <= 5)
+	{
+		channelOne = 0;
+	}
+	if(channelThree <=5)
+	{
+		channelThree = 0;
+	}*/
 	motor[LB] = (channelThree + channelOne);
 	motor[LF] = (channelThree + channelOne);
 	motor[RF] = (channelThree - channelOne);
@@ -326,7 +334,7 @@ void driveArmPID()
 	else
 	{
 		startTask(arm);
-		moveArmAuton(prevArmPosRight, prevArmPosLeft-1);
+		moveArmAuton(prevArmPosRight, prevArmPosLeft);
 	}
 }
 
@@ -335,7 +343,7 @@ void drive()
 	//int right_armVal;
 	//int left_armVal;
   //tank();
-	arcade();
+	arcadeRampUp();
   //Arm control
 	driveArmPID();
 	//Intake control
@@ -422,76 +430,11 @@ void dropCube()
 task autonomous()
 {
 	//startTask(driveBase);
-	startTask(arm);
-	startTask(driveBasePID);
-	dropCube();  // Remove this function call once you have "real" code.
-}
-void dropSmallPoleRed()
-{
-	startTask(arm);
-	startTask(driveBasePID);
-	drivePID(-15,-25);
-	moveArmAuton(50,50);
-	wait1Msec(2000);
-	autonIntake(-127,-127);
-	wait1Msec(2000);
-	autonIntake(0,0);
-	stopTask(arm);
-	stopTask(driveBasePID);
-
-	//motor[LB]=motor[LF]=motor[RB]=motor[RF]=0;
-	 //Vidur said he wont get mad if motors dont run later 11/3/14
-}
-
-void dropSmallPoleRed()
-{
-	startTask(arm);
-	startTask(driveBasePID);
-	drivePID(-15,-25);
-	moveArmAuton(50,50);
-	wait1Msec(2000);
-	autonIntake(-127,-127);
-	wait1Msec(2000);
-	autonIntake(0,0);
-	stopTask(arm);
-	stopTask(driveBasePID);
-
-	//motor[LB]=motor[LF]=motor[RB]=motor[RF]=0;
-	 //Vidur said he wont get mad if motors dont run later 11/3/14
-}
-
-void dropSmallPoleRed()
-{
-	startTask(arm);
-	startTask(driveBasePID);
-	drivePID(-15,-25);
-	moveArmAuton(50,50);
-	wait1Msec(2000);
-	autonIntake(-127,-127);
-	wait1Msec(2000);
-	autonIntake(0,0);
-	stopTask(arm);
-	stopTask(driveBasePID);
-
-	//motor[LB]=motor[LF]=motor[RB]=motor[RF]=0;
-	 //Vidur said he wont get mad if motors dont run later 11/3/14
-}
-void dropSmallPoleRed()
-{
-	startTask(arm);
+	//startTask(arm);
 	//startTask(driveBasePID);
-	drivePID(-15,-25);
-	moveArmAuton(50,50);
-	wait1Msec(2000);
-	autonIntake(-127,-127);
-	wait1Msec(2000);
-	autonIntake(0,0);
-	stopTask(arm);
-	stopTask(driveBasePID);
-
-	//motor[LB]=motor[LF]=motor[RB]=motor[RF]=0;
-	 //Vidur said he wont get mad if motors dont run later 11/3/14
+	//dropCube();  // Remove this function call once you have "real" code.
 }
+
 
 void dropSmallPoleRed()
 {
@@ -563,21 +506,30 @@ task usercontrol()
  // Remove this function call once you have "real" code.
 	//startTask(arm);
 	//startTask(driveBasePID);
-
 	startTask(stopAll);
+	//dropSmallPoleRed();
 	stopTask(arm);
 //	dropCube();
-
+	//dropSmallPoleRed();
 	//dropMediumPole();
 //stopTask(arm);
- stopTask(driveBasePID);
+ 	stopTask(driveBasePID);
+ //	stopTask(arm);
 	//startTask(stopAll);
 	//dropSmallPoleBlue();
 	while (true)
 	{
 
 		drive();
-
+		if(vexRT[Btn7D])
+		{
+			startTask(stopAll);
+			startTask(arm);
+			startTask(driveBasePID);
+			dropSmallPoleRed();
+			stopTask(arm);
+			stopTask(driveBasePID);
+		}
 			/*
 				_   _     _   _   _   _   _
 			 / \ / \   / \ / \ / \ / \ / \
