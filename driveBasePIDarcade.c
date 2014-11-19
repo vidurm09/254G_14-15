@@ -343,7 +343,7 @@ void drive()
 	//int right_armVal;
 	//int left_armVal;
   //tank();
-	arcadeRampUp();
+	arcade();
   //Arm control
 	driveArmPID();
 	//Intake control
@@ -440,8 +440,8 @@ void dropSmallPoleRed()
 {
 	startTask(arm);
 	startTask(driveBasePID);
-	drivePID(-15,-25);
-	moveArmAuton(50,50);
+	drivePID(-13,-30);
+	moveArmAuton(55,55);
 	wait1Msec(2000);
 	autonIntake(-127,-127);
 	wait1Msec(2000);
@@ -489,11 +489,12 @@ void dropMediumPole()
 	startTask(arm);
 	startTask(driveBasePID);
 	//bool run = false;
-	drivePID(45,50);
+	drivePID(40,50);
 	autonIntake(127,127);
 	wait1Msec(3000);
-	moveArmAuton(80,80);
-	//wait1Msec(2000);
+	moveArmAuton(85,85);
+wait1Msec(2000);
+
 	autonIntake(0,0);
 
 
@@ -527,6 +528,8 @@ task usercontrol()
 			startTask(arm);
 			startTask(driveBasePID);
 			dropSmallPoleRed();
+		//	dropMediumPole();
+			wait1Msec(10000);
 			stopTask(arm);
 			stopTask(driveBasePID);
 		}
