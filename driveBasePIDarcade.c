@@ -489,13 +489,15 @@ void dropMediumPole()
 	startTask(arm);
 	startTask(driveBasePID);
 	//bool run = false;
-	drivePID(40,50);
+	drivePID(14,17);
 	autonIntake(127,127);
 	wait1Msec(3000);
-	moveArmAuton(85,85);
+	moveArmAuton(80,80);
+	wait1Msec(4000);
+	drivePID(18,27);
 wait1Msec(2000);
 
-	autonIntake(0,0);
+	autonIntake(-127,-127);
 
 
 
@@ -527,8 +529,8 @@ task usercontrol()
 			startTask(stopAll);
 			startTask(arm);
 			startTask(driveBasePID);
-			dropSmallPoleRed();
-		//	dropMediumPole();
+		//	dropSmallPoleRed();
+			dropMediumPole();
 			wait1Msec(10000);
 			stopTask(arm);
 			stopTask(driveBasePID);
