@@ -294,6 +294,21 @@ void tank()
   motor[RB]=-vexRT[Ch2];
   motor[LB]=motor[LF]=vexRT[Ch3];
 }
+
+void armPresets()
+{
+	startTask(arm);
+	if (vexRT[Btn8U]== 1)
+	{
+		moveArmAuton(80,80);
+	}
+
+	if (vexRT[Btn8D] == 1)
+	{
+		moveArmAuton(30,30);
+	}
+}
+
 void driveArm()
 {
 	if (vexRT[Btn6D]== 1 && !softStop)
@@ -345,7 +360,26 @@ void drive()
   //tank();
 	arcade();
   //Arm control
-	driveArmPID();
+	driveArm();
+	//driveArm();
+	/*if (vexRT[Btn6D]== 1 && !softStop)
+	{
+		setLeftArm(-127);
+		setRightArm(-127);
+	}
+else if (vexRT[Btn6U] == 1 && !softStopTop)
+	{
+		setRightArm(127);
+		setLeftArm(127);
+	}
+	else
+	{
+		setRightArm(0);
+		setLeftArm(0);
+	}*/
+
+
+	//armPresets();
 	//Intake control
 	if (vexRT[Btn5U]== 1)
 	{
@@ -404,11 +438,12 @@ void dropCube()
 	moveArmAuton(5,5);
 	//autonomousDrive(-300, -300);
 	wait1Msec(500);
-	motor[LB]=motor[LF]=-120;
+	/*motor[LB]=motor[LF]=-120;
 	 motor[RB]=120;
-	 motor[RF]=-120;
+	 motor[RF]=-120;*/
+	 drivePID(-20,-20);
 	 wait1Msec(500);
- motor[LB]=motor[LF]=motor[RB]=motor[RF]=0;
+ //motor[LB]=motor[LF]=motor[RB]=motor[RF]=0;
 	autonIntake(-127,0);
 	wait1Msec(2000);
 	autonIntake(0,0);
@@ -427,14 +462,6 @@ void dropCube()
 	moveArmAuton(40,40);
 	drivePID(10,0);*/
 }
-task autonomous()
-{
-	//startTask(driveBase);
-	//startTask(arm);
-	//startTask(driveBasePID);
-	//dropCube();  // Remove this function call once you have "real" code.
-}
-
 
 void dropSmallPoleRed()
 {
@@ -456,9 +483,10 @@ void dropSmallPoleRed()
 void dropSmallPoleBlue()
 {
 	startTask(arm);
-	//startTask(driveBasePID);
-	//drivePID(-25,-15);
-	drivePID(-50,-50);
+	startTask(driveBasePID);
+	drivePID(-25,-15);
+	wait1Msec(1000);
+	//drivePID(-50,-50);
 	moveArmAuton(50,50);
 	wait1Msec(2000);
 	autonIntake(-127,-127);
@@ -484,10 +512,13 @@ task stopAll()
 }
 }
 
-void dropMediumPole()
+void dropMediumPoleRedSky()
 {
 	startTask(arm);
 	startTask(driveBasePID);
+	moveArmAuton(20,20);
+	wait1Msec(1000);
+	moveArmAuton(0,0);
 	//bool run = false;
 	drivePID(14,17);
 	autonIntake(127,127);
@@ -498,10 +529,77 @@ void dropMediumPole()
 wait1Msec(2000);
 
 	autonIntake(-127,-127);
+}
 
+void dropMediumPoleRedNotSky()
+{
+	startTask(arm);
+	startTask(driveBasePID);
+	moveArmAuton(20,20);
+	wait1Msec(1000);
+	moveArmAuton(0,0);
+	//bool run = false;
+	drivePID(17,14);
+	autonIntake(127,127);
+	wait1Msec(3000);
+	moveArmAuton(80,80);
+	wait1Msec(4000);
+	drivePID(32,16);
+wait1Msec(2000);
+	autonIntake(-127,-127);
+	wait1Msec(3000);
+	drivePID(10,10);
 
+}
 
+void dropMediumPoleBlueSky()
+{
+	startTask(arm);
+	startTask(driveBasePID);
+	moveArmAuton(20,20);
+	wait1Msec(2000);
+	moveArmAuton(0,0);
+wait1Msec(500);
+	//bool run = false;
+	drivePID(17,14);
+	autonIntake(127,127);
+	wait1Msec(3000);
+	moveArmAuton(80,80);
+	wait1Msec(4000);
+	drivePID(32,16);
+wait1Msec(2000);
+	autonIntake(-127,-127);
+	wait1Msec(3000);
+	autonIntake(127,127);
+	drivePID(10,10);
+}
 
+void dropMediumPoleBlueNotSky()
+{
+	startTask(arm);
+	startTask(driveBasePID);
+	moveArmAuton(20,20);
+	wait1Msec(1000);
+	moveArmAuton(0,0);
+	//bool run = false;
+	drivePID(14,17);
+	autonIntake(127,127);
+	wait1Msec(3000);
+	moveArmAuton(80,80);
+	wait1Msec(4000);
+	drivePID(18,27);
+wait1Msec(2000);
+
+	autonIntake(-127,-127);
+}
+
+task autonomous()
+{
+	startTask(driveBasePID);
+	startTask(arm);
+	dropSmallPoleBlue();
+	//startTask(driveBasePID);
+	//dropCube();  // Remove this function call once you have "real" code.
 }
 
 task usercontrol()
@@ -529,8 +627,9 @@ task usercontrol()
 			startTask(stopAll);
 			startTask(arm);
 			startTask(driveBasePID);
-		//	dropSmallPoleRed();
-			dropMediumPole();
+				dropSmallPoleBlue();
+			//dropMediumPoleBlueSky();
+			//ndropCube();
 			wait1Msec(10000);
 			stopTask(arm);
 			stopTask(driveBasePID);
