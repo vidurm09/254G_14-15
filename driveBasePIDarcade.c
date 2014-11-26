@@ -1,6 +1,11 @@
 #pragma config(I2C_Usage, I2C1, i2cSensors)
 #pragma config(Sensor, in1,    rightPot,       sensorPotentiometer)
 #pragma config(Sensor, in2,    leftPot,        sensorPotentiometer)
+#pragma config(Sensor, in4,    sideLeft,       sensorLineFollower)
+#pragma config(Sensor, in5,    sideRight,      sensorLineFollower)
+#pragma config(Sensor, in6,    centerLeft,     sensorLineFollower)
+#pragma config(Sensor, in7,    centerMid,      sensorLineFollower)
+#pragma config(Sensor, in8,    centerRight,    sensorLineFollower)
 #pragma config(Sensor, dgtl1,  touchsensor,    sensorTouch)
 #pragma config(Sensor, dgtl2,  rightArmButton, sensorDigitalIn)
 #pragma config(Sensor, dgtl3,  leftArmButton,  sensorDigitalIn)
@@ -71,7 +76,12 @@ void moveArmAuton(float rAngle, float lAngle)
 	left_armAngle = rAngle;
 	right_armAngle = lAngle;
 }
-
+void setDrivePower(int left, int right)
+{
+	motor[RF]=right;
+  motor[RB]=-right;
+  motor[LB]=motor[LF]=left;
+}
 task driveBasePID()
 {
 	//Left motor control vars
@@ -492,6 +502,7 @@ void dropSmallPoleBlue()
 	autonIntake(-127,-127);
 	wait1Msec(2000);
 	autonIntake(0,0);
+	drivePID(-40,-40);
 	stopTask(arm);
 	stopTask(driveBasePID);
 
@@ -593,6 +604,39 @@ wait1Msec(2000);
 	autonIntake(-127,-127);
 }
 
+void moveBackDrop()
+{
+	startTask(arm);
+	startTask(driveBasePID);
+	drivePID(-15,-15);
+	wait1Msec(1000);
+	moveArmAuton(30,30);
+	wait1Msec(1000);
+	autonIntake(-127,-127);
+}
+void lineSensor()//Run in a while loop
+{
+	int threshold;
+  threshold = 1500; //Check Threshold with avg of light, avg of dark, and then the avg of those two
+  //If the left sensor sees dark...
+  if(SensorValue(centerLeft) > threshold)
+  {
+    //...counter-steer to the left.
+    setDrivePower(100,127);
+  }
+  //If the center sensor sees dark...
+  if(SensorValue(centerMid) > threshold)
+  {
+    //...move forward.
+    setDrivePower(127,127);
+  }
+  //If the right sensor sees dark...
+  if(SensorValue(centerRight) > threshold)
+  {
+    //...counter steer to the right.
+    setDrivePower(127,100);
+  }
+}
 task autonomous()
 {
 	startTask(driveBasePID);
@@ -627,7 +671,8 @@ task usercontrol()
 			startTask(stopAll);
 			startTask(arm);
 			startTask(driveBasePID);
-				dropSmallPoleBlue();
+				//dropSmallPoleBlue();
+			//moveBackDrop();
 			//dropMediumPoleBlueSky();
 			//ndropCube();
 			wait1Msec(10000);
