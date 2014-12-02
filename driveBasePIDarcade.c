@@ -12,6 +12,7 @@
 #pragma config(Sensor, dgtl4,  rightArmButtonTop, sensorDigitalIn)
 #pragma config(Sensor, dgtl5,  leftArmButtonTop, sensorDigitalIn)
 #pragma config(Sensor, dgtl6,  distSens,       sensorSONAR_cm)
+#pragma config(Sensor, dgtl8,  solenoid,       sensorDigitalOut)
 #pragma config(Sensor, I2C_1,  ,               sensorQuadEncoderOnI2CPort,    , AutoAssign)
 #pragma config(Sensor, I2C_2,  ,               sensorQuadEncoderOnI2CPort,    , AutoAssign)
 #pragma config(Sensor, I2C_3,  ,               sensorQuadEncoderOnI2CPort,    , AutoAssign)
@@ -392,15 +393,22 @@ else if (vexRT[Btn6U] == 1 && !softStopTop)
 
 	//armPresets();
 	//Intake control
-	if (vexRT[Btn5U]== 1)
+	if (vexRT[Btn7D] == 1)
 	{
-		motor[IR]=127;
-		motor[IL]=127;
+		SensorValue[solenoid] = 1;
+		wait1Msec(1000);
+		SensorValue[solenoid] = 0;
 	}
-	else if (vexRT[Btn5D] == 1)
+
+	if (vexRT[Btn5U]== 1)
 	{
 		motor[IR]=-127;
 		motor[IL]=-127;
+	}
+	else if (vexRT[Btn5D] == 1)
+	{
+		motor[IR]=127;
+		motor[IL]=127;
 	}
 	else
 	{
@@ -705,7 +713,7 @@ task usercontrol()
 	{
 
 		drive();
-		if(vexRT[Btn7D])
+		/*if(vexRT[Btn7D])
 		{
 			startTask(stopAll);
 			startTask(arm);
