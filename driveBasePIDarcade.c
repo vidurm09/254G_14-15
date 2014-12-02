@@ -11,6 +11,7 @@
 #pragma config(Sensor, dgtl3,  leftArmButton,  sensorDigitalIn)
 #pragma config(Sensor, dgtl4,  rightArmButtonTop, sensorDigitalIn)
 #pragma config(Sensor, dgtl5,  leftArmButtonTop, sensorDigitalIn)
+#pragma config(Sensor, dgtl6,  distSens,       sensorSONAR_cm)
 #pragma config(Sensor, I2C_1,  ,               sensorQuadEncoderOnI2CPort,    , AutoAssign)
 #pragma config(Sensor, I2C_2,  ,               sensorQuadEncoderOnI2CPort,    , AutoAssign)
 #pragma config(Sensor, I2C_3,  ,               sensorQuadEncoderOnI2CPort,    , AutoAssign)
@@ -614,8 +615,13 @@ void moveBackDrop()
 	wait1Msec(1000);
 	autonIntake(-127,-127);
 }
-void lineSensor()//Run in a while loop
+
+void lineSensorNonSky()//Run in a while loop
 {
+	int sonarVal;
+	sonarVal = SensorValue(distSens);
+	repeatUntil(sonarVal > 100) {
+	bool keepTurning = false;
 	int threshold;
   threshold = 1500; //Check Threshold with avg of light, avg of dark, and then the avg of those two
   //If the left sensor sees dark...
@@ -636,7 +642,40 @@ void lineSensor()//Run in a while loop
     //...counter steer to the right.
     setDrivePower(127,100);
   }
+
+  if (SensorValue(sideRight) > threshold)
+	{
+		setDrivePower(-127, 127);
+		keepTurning = true;
+		while (keepTurning)
+		{
+			if (SensorValue(sideRight) > threshold)
+			{
+				keepTurning=false;
+			}
+		}
+	}
+
+	if (SensorValue(sideLeft) > threshold)
+	{
+			setDrivePower(-127, 127);
+		keepTurning = true;
+		while (keepTurning)
+		{
+			if (SensorValue(sideRight) > threshold)
+			{
+				keepTurning=false;
+			}
+		}
+	}
+
 }
+
+}
+
+
+
+
 task autonomous()
 {
 	startTask(driveBasePID);
