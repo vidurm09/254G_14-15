@@ -38,6 +38,7 @@
 #include "Vex_Competition_Includes.c"
 
 //Temp
+
 float leftArmAngle;
 float rightArmAngle;
 
@@ -361,12 +362,21 @@ void driveArmPID()
 	else
 	{
 		startTask(arm);
-		moveArmAuton(prevArmPosRight, 0);//prevArmPosLeft);
+		moveArmAuton(prevArmPosRight, prevArmPosLeft);
 	}
+}
+
+void resetEncoders()
+{
+	nMotorEncoder[LB] = 0;
+	nMotorEncoder[RB] = 0;
+	nMotorEncoder[ALT] = 0;
+	nMotorEncoder[ART] = 0;
 }
 
 void drive()
 {
+
 	//int right_armVal;
 	//int left_armVal;
   //tank();
@@ -695,6 +705,7 @@ void lineSensorNonSky()//Run in a while loop
 
 task autonomous()
 {
+	resetEncoders();
 	startTask(driveBasePID);
 	startTask(arm);
 	dropSmallPoleBlue();
