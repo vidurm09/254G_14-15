@@ -355,13 +355,13 @@ void driveArmPID()
 		stopTask(arm);
 		setRightArm(127);
 		setLeftArm(127);
-		prevArmPosLeft = getLeftArm();
-		prevArmPosRight = getRightArm();
+		prevArmPosLeft = getRightArm();
+		prevArmPosRight = getLeftArm();
 	}
 	else
 	{
 		startTask(arm);
-		moveArmAuton(prevArmPosRight, prevArmPosLeft);
+		moveArmAuton(prevArmPosRight, 0);//prevArmPosLeft);
 	}
 }
 
@@ -372,7 +372,7 @@ void drive()
   //tank();
 	arcade();
   //Arm control
-	driveArm();
+	driveArmPID();
 	//driveArm();
 	/*if (vexRT[Btn6D]== 1 && !softStop)
 	{
@@ -393,10 +393,13 @@ else if (vexRT[Btn6U] == 1 && !softStopTop)
 
 	//armPresets();
 	//Intake control
+
 	if (vexRT[Btn7D] == 1)
 	{
 		SensorValue[solenoid] = 1;
-		wait1Msec(1000);
+	}
+	if (vexRT[Btn7U] == 1)
+	{
 		SensorValue[solenoid] = 0;
 	}
 
@@ -627,55 +630,61 @@ void moveBackDrop()
 void lineSensorNonSky()//Run in a while loop
 {
 	int sonarVal;
+	int numTurns = 0;
 	sonarVal = SensorValue(distSens);
-	repeatUntil(sonarVal > 100) {
 	bool keepTurning = false;
 	int threshold;
-  threshold = 1500; //Check Threshold with avg of light, avg of dark, and then the avg of those two
+  threshold = 200; //Check Threshold with avg of light, avg of dark, and then the avg of those two
   //If the left sensor sees dark...
-  if(SensorValue(centerLeft) > threshold)
+  if(SensorValue(centerLeft) < threshold)
   {
     //...counter-steer to the left.
     setDrivePower(100,127);
   }
   //If the center sensor sees dark...
-  if(SensorValue(centerMid) > threshold)
-  {
-    //...move forward.
-    setDrivePower(127,127);
-  }
+
   //If the right sensor sees dark...
-  if(SensorValue(centerRight) > threshold)
+  if(SensorValue(centerRight) < threshold)
   {
     //...counter steer to the right.
     setDrivePower(127,100);
   }
+  if(SensorValue(centerMid) < threshold)
+  {
+    //...move forward.
+    setDrivePower(127,127);
+  }
+	autonIntake(127,127);
 
-  if (SensorValue(sideRight) > threshold)
+	if (SensorValue(sideRight) < threshold)
 	{
 		setDrivePower(-127, 127);
 		keepTurning = true;
 		while (keepTurning)
 		{
-			if (SensorValue(sideRight) > threshold)
+			if (SensorValue(sideRight) < threshold)
 			{
-				keepTurning=false;
+				numTurns++;
+				if (numTurns >= 2)
+					{keepTurning=false;}
 			}
-		}
+
 	}
 
-	if (SensorValue(sideLeft) > threshold)
+	/* if (SensorValue(sideLeft) < threshold)
 	{
-			setDrivePower(-127, 127);
+		setDrivePower(-127, 127);
 		keepTurning = true;
 		while (keepTurning)
 		{
-			if (SensorValue(sideRight) > threshold)
+			if (SensorValue(sideRight) < threshold)
 			{
-				keepTurning=false;
+				numTurns++;
+				if (numTurns >= 2)
+					{keepTurning=false;}
 			}
 		}
-	}
+	}*/
 
 }
 
@@ -698,6 +707,7 @@ task usercontrol()
  // Remove this function call once you have "real" code.
 	//startTask(arm);
 	//startTask(driveBasePID);
+
 	startTask(stopAll);
 	//dropSmallPoleRed();
 	stopTask(arm);
@@ -712,6 +722,13 @@ task usercontrol()
 	while (true)
 	{
 
+	if (vexRT[Btn8D])
+	{
+		while(true)
+		{
+			lineSensorNonSky();
+		}
+	}
 		drive();
 		/*if(vexRT[Btn7D])
 		{
