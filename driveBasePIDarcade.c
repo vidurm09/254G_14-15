@@ -476,14 +476,12 @@ void dropCube()
 	 drivePID(-20,-20);
 	 wait1Msec(500);
  //motor[LB]=motor[LF]=motor[RB]=motor[RF]=0;
-	autonIntake(-127,0);
-	wait1Msec(2000);
+	autonIntake(127,0);
+	wait1Msec(3000);
 	autonIntake(0,0);
-	 motor[LB]=motor[LF]=-120;
-	 motor[RB]=120;
-	 motor[RF]=-120;
-	 wait1Msec(1000);
- motor[LB]=motor[LF]=motor[RB]=motor[RF]=0;
+	drivePID(-5, -5);
+	wait1Msec(1000);
+ 	motor[LB]=motor[LF]=motor[RB]=motor[RF]=0;
 
 //	autonomousDrive(-300, -300);
 	wait1Msec(1000);
@@ -630,11 +628,13 @@ void moveBackDrop()
 {
 	startTask(arm);
 	startTask(driveBasePID);
+	wait1Msec(1000);
 	drivePID(-15,-15);
 	wait1Msec(1000);
 	moveArmAuton(30,30);
 	wait1Msec(1000);
-	autonIntake(-127,-127);
+	motor[IL]= -127
+	motor[IR] = -127
 }
 
 void lineSensorNonSky()//Run in a while loop
@@ -706,11 +706,15 @@ void lineSensorNonSky()//Run in a while loop
 task autonomous()
 {
 	resetEncoders();
-	startTask(driveBasePID);
-	startTask(arm);
-	dropSmallPoleBlue();
 	//startTask(driveBasePID);
-	//dropCube();  // Remove this function call once you have "real" code.
+	motor[RF]=+127;
+  motor[RB]=-127;
+  motor[LB]=motor[LF]=+127;
+  wait1Msec(2000);
+  motor[RF]=0;
+  motor[RB]=0;
+  motor[LB]=motor[LF]=0;
+	// Remove this function call once you have "real" code.
 }
 
 task usercontrol()
@@ -718,16 +722,14 @@ task usercontrol()
  // Remove this function call once you have "real" code.
 	//startTask(arm);
 	//startTask(driveBasePID);
-
-	startTask(stopAll);
-	//dropSmallPoleRed();
-	stopTask(arm);
-//	dropCube();
-	//dropSmallPoleRed();
-	//dropMediumPole();
-//stopTask(arm);
- 	stopTask(driveBasePID);
- //	stopTask(arm);
+	//startTask(stopAll);
+	//stopTask(arm);
+ //	stopTask(driveBasePID);
+ //	dropCube();
+ //	startTask(stopAll);
+	//stopTask(arm);
+ //	stopTask(driveBasePID);
+ //	stopTask(arm);4
 	//startTask(stopAll);
 	//dropSmallPoleBlue();
 	while (true)
