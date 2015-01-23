@@ -18,7 +18,7 @@
 #pragma config(Sensor, I2C_3,  ,               sensorQuadEncoderOnI2CPort,    , AutoAssign)
 #pragma config(Sensor, I2C_4,  ,               sensorQuadEncoderOnI2CPort,    , AutoAssign)
 #pragma config(Motor,  port1,           RF,            tmotorVex393_HBridge, openLoop, reversed, encoderPort, I2C_1)
-#pragma config(Motor,  port2,           IR,            tmotorVex393_MC29, openLoop)
+#pragma config(Motor,  port2,           IR,            tmotorVex393_MC29, openLoop, reversed)
 #pragma config(Motor,  port3,           IL,            tmotorVex393_MC29, openLoop)
 #pragma config(Motor,  port4,           LB,            tmotorVex393_MC29, openLoop)
 #pragma config(Motor,  port5,           LF,            tmotorVex393_MC29, openLoop)
@@ -60,7 +60,7 @@ float right_armPow;
 bool armMove;
 bool armA;
 bool driveA;
-float potTest;
+int armLoop = 0;
 float right_inte;
 float left_inte;
 float armAngle;
@@ -187,6 +187,30 @@ float getRightArm()
 	float value = (nMotorEncoder[ART])/2;
 	return ((value/7.0)*360/392.0);
 }
+bool toArmStream = false;
+float rAPrevError = 0;
+float rAIntegral = 0;
+float lAPrevError = 0;
+float lAIntegral = 0;
+float rAError;
+float lAError;
+float lADerivative;
+float rADerivative;
+float liftSetPt = 0;
+float lastLiftSetPt = 0;
+
+task armPID() {
+	while(true) {
+		rAError = liftSetPt - nMotorEncoder[ART];
+		lAError = liftSetPt - nMotorEncoder[ALT];
+		lAIntegral += lAError;
+		rAIntegral += rAError;
+		rADerivative = rAError - rAPrevError;
+		//lDerivative = lAError - lAPrevError;
+		//setLeftArm((armKp*lAError) + (armKi*lAIntegral) + (armKd*lADerivative));
+		//setRightArm((armKp*RAError) + (armKi*RAIntegral) + (armKd*RADerivative));
+	}
+}
 
 float getLeftArm()
 {
@@ -206,8 +230,8 @@ void setRightArm(int power)
 }
 void setLeftArm(int power)
 {
-	motor[ALB]=-power;
-	motor[ALT] = -power;
+	motor[ALB]= power;
+	motor[ALT] = power;
 }
 
 task arm()
@@ -348,20 +372,25 @@ void driveArmPID()
 		stopTask(arm)
 		setLeftArm(-127);
 		setRightArm(-127);
-		prevArmPosLeft = getLeftArm();
-		prevArmPosRight = getRightArm();
+		armLoop = 0;
 	}
 	else if (vexRT[Btn6U] == 1 && !softStopTop)
 	{
 		stopTask(arm);
 		setRightArm(127);
 		setLeftArm(127);
+		armLoop = 0;
 		prevArmPosLeft = getRightArm();
 		prevArmPosRight = getLeftArm();
 	}
 	else
 	{
 		startTask(arm);
+		if(armLoop == 0) {
+			prevArmPosLeft = getRightArm();
+			prevArmPosRight = getLeftArm();
+		}
+		armLoop++;
 		moveArmAuton(prevArmPosRight, prevArmPosLeft);
 	}
 }
@@ -382,7 +411,7 @@ void drive()
   //tank();
 	arcade();
   //Arm control
-	driveArm();
+	driveArmPID();
 	//driveArm();
 	/*if (vexRT[Btn6D]== 1 && !softStop)
 	{
@@ -407,6 +436,7 @@ else if (vexRT[Btn6U] == 1 && !softStopTop)
 	if (vexRT[Btn7D] == 1)
 	{
 		SensorValue[solenoid] = 1;
+
 	}
 	if (vexRT[Btn7U] == 1)
 	{
