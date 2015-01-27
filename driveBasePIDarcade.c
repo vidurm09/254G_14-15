@@ -6,12 +6,10 @@
 #pragma config(Sensor, in6,    centerLeft,     sensorLineFollower)
 #pragma config(Sensor, in7,    centerMid,      sensorLineFollower)
 #pragma config(Sensor, in8,    centerRight,    sensorLineFollower)
-#pragma config(Sensor, dgtl1,  touchsensor,    sensorTouch)
-#pragma config(Sensor, dgtl2,  rightArmButton, sensorDigitalIn)
-#pragma config(Sensor, dgtl3,  leftArmButton,  sensorDigitalIn)
+#pragma config(Sensor, dgtl1,  leftArmButtonTop, sensorDigitalIn)
+#pragma config(Sensor, dgtl2,  leftArmButton,  sensorDigitalIn)
+#pragma config(Sensor, dgtl3,  rightArmButton, sensorDigitalIn)
 #pragma config(Sensor, dgtl4,  rightArmButtonTop, sensorDigitalIn)
-#pragma config(Sensor, dgtl5,  leftArmButtonTop, sensorDigitalIn)
-#pragma config(Sensor, dgtl6,  distSens,       sensorSONAR_cm)
 #pragma config(Sensor, dgtl8,  solenoid,       sensorDigitalOut)
 #pragma config(Sensor, I2C_1,  ,               sensorQuadEncoderOnI2CPort,    , AutoAssign)
 #pragma config(Sensor, I2C_2,  ,               sensorQuadEncoderOnI2CPort,    , AutoAssign)
@@ -36,6 +34,7 @@
 #pragma userControlDuration(120)
 
 #include "Vex_Competition_Includes.c"
+
 
 //Temp
 
@@ -408,8 +407,8 @@ void drive()
 
 	//int right_armVal;
 	//int left_armVal;
-  //tank();
-	arcade();
+      tank();
+	//arcade();
   //Arm control
 	driveArmPID();
 	//driveArm();
@@ -436,6 +435,13 @@ else if (vexRT[Btn6U] == 1 && !softStopTop)
 	if (vexRT[Btn7D] == 1)
 	{
 		SensorValue[solenoid] = 1;
+
+	}
+	if (vexRT[Btn7L] == 1)
+	{
+		SensorValue[solenoid] = 1;
+		wait1Msec(2000);
+		SensorValue[solenoid] = 0;
 
 	}
 	if (vexRT[Btn7U] == 1)
@@ -563,13 +569,13 @@ task stopAll()
 {
 	while(true)
 {
-	if (SensorValue[touchsensor] == 1)
+	/*if (SensorValue[touchsensor] == 1)
 	{
 		stopTask(driveBasePID);
 		motor[LB]=motor[LF]=motor[RB]=motor[RF]=0;
 		stopTask(arm);
 		motor[ALB]=motor[ALT]=motor[ARB]=motor[ALB]=0;
-	}
+	}*/
 }
 }
 
@@ -671,7 +677,7 @@ void lineSensorNonSky()//Run in a while loop
 {
 	int sonarVal;
 	int numTurns = 0;
-	sonarVal = SensorValue(distSens);
+	//sonarVal = SensorValue(distSens);
 	bool keepTurning = false;
 	int threshold;
   threshold = 200; //Check Threshold with avg of light, avg of dark, and then the avg of those two
