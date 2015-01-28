@@ -75,8 +75,8 @@ float mapRange(float a1,float a2,float b1,float b2,float s)//a1,a2 -> input rang
 
 void moveArmAuton(float rAngle, float lAngle)
 {
-	left_armAngle = rAngle;
-	right_armAngle = lAngle;
+	left_armAngle = lAngle;
+	right_armAngle = rAngle;
 }
 void setDrivePower(int left, int right)
 {
@@ -390,7 +390,7 @@ void driveArmPID()
 			prevArmPosRight = getLeftArm();
 		}
 		armLoop++;
-		moveArmAuton(prevArmPosRight, prevArmPosLeft);
+		moveArmAuton(prevArmPosLeft+1, prevArmPosRight);
 	}
 }
 
@@ -407,7 +407,7 @@ void drive()
 
 	//int right_armVal;
 	//int left_armVal;
-      tank();
+  tank();
 	//arcade();
   //Arm control
 	driveArmPID();
