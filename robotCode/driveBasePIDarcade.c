@@ -34,8 +34,7 @@
 #pragma userControlDuration(120)
 
 #include "Vex_Competition_Includes.c"
-#include "robotArmCode.c"
-#include "robotDriveCode.c"
+
 
 //Temp
 
@@ -450,12 +449,12 @@ else if (vexRT[Btn6U] == 1 && !softStopTop)
 		SensorValue[solenoid] = 0;
 	}
 
-	if (vexRT[Btn5U]== 1)
+	if (vexRT[Btn5D]== 1)
 	{
 		motor[IR]=-127;
 		motor[IL]=-127;
 	}
-	else if (vexRT[Btn5D] == 1)
+	else if (vexRT[Btn5U] == 1)
 	{
 		motor[IR]=127;
 		motor[IL]=127;
