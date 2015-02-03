@@ -4,8 +4,13 @@
 #pragma competitionControl(Competition)
 #pragma autonomousDuration(20)
 #pragma userControlDuration(120)
+#pragma systemFile
 
 #include "Vex_Competition_Includes.c"   //Main competition background code...do not modify!
+#include "robotGeneral.c"
+#include "robotDrive.c"
+#include "robotArm.c"
+#include "robotAuto.c"
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //
