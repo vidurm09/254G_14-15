@@ -31,3 +31,13 @@ task drivePID() {
 		}
 	}
 }
+
+void driveTicks(float ticks) {
+	driveSetRPt += ticks;
+	driveSetLPt += ticks;
+}
+
+void turnTicks(float ticks) {
+	driveSetRPt -= ticks;
+	driveSetLPt += ticks;
+}
