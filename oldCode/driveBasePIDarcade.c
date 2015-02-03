@@ -10,15 +10,15 @@
 #pragma config(Sensor, dgtl2,  leftArmButton,  sensorDigitalIn)
 #pragma config(Sensor, dgtl3,  rightArmButton, sensorDigitalIn)
 #pragma config(Sensor, dgtl4,  rightArmButtonTop, sensorDigitalIn)
-#pragma config(Sensor, dgtl8,  solenoid,       sensorDigitalOut)
+#pragma config(Sensor, dgtl12, solenoid,       sensorDigitalOut)
 #pragma config(Sensor, I2C_1,  ,               sensorQuadEncoderOnI2CPort,    , AutoAssign)
 #pragma config(Sensor, I2C_2,  ,               sensorQuadEncoderOnI2CPort,    , AutoAssign)
 #pragma config(Sensor, I2C_3,  ,               sensorQuadEncoderOnI2CPort,    , AutoAssign)
 #pragma config(Sensor, I2C_4,  ,               sensorQuadEncoderOnI2CPort,    , AutoAssign)
-#pragma config(Motor,  port1,           RF,            tmotorVex393_HBridge, openLoop, reversed, encoderPort, I2C_1)
+#pragma config(Motor,  port1,           RF,            tmotorVex393_HBridge, openLoop, reversed)
 #pragma config(Motor,  port2,           IR,            tmotorVex393_MC29, openLoop, reversed)
 #pragma config(Motor,  port3,           IL,            tmotorVex393_MC29, openLoop)
-#pragma config(Motor,  port4,           LB,            tmotorVex393_MC29, openLoop)
+#pragma config(Motor,  port4,           LB,            tmotorVex393_MC29, openLoop, encoderPort, I2C_1)
 #pragma config(Motor,  port5,           LF,            tmotorVex393_MC29, openLoop)
 #pragma config(Motor,  port6,           ARB,           tmotorVex393_MC29, openLoop, reversed)
 #pragma config(Motor,  port7,           ART,           tmotorVex393_MC29, openLoop, reversed, encoderPort, I2C_4)
@@ -34,8 +34,7 @@
 #pragma userControlDuration(120)
 
 #include "Vex_Competition_Includes.c"
-#include "robotArmCode.c"
-#include "robotDriveCode.c"
+
 
 //Temp
 
@@ -133,7 +132,7 @@ task driveBasePID()
 
 
 	 //Right side PID
-	 right_sensorReading = -nMotorEncoder[RB];
+	 right_sensorReading = nMotorEncoder[RB];
 		right_error = rightDriveTargetValue - right_sensorReading;
 		right_integral = right_integral + right_error;
 		if (right_error == 0)
@@ -268,8 +267,8 @@ while(isArm)
 	}*/
 	setLeftArm(left_armPow);
 	setRightArm(right_armPow);
-	writeDebugStreamLine("Left Power is %f,Left Error is %f\n,", left_armPow, left_error);
-	writeDebugStreamLine("Right Power is %f,Left Error is %f\n,", right_armPow, right_error);
+	//writeDebugStreamLine("Left Encoder is %f, left error %f", nMotorEncoder[LB], left_error);
+	writeDebugStreamLine("Right target is %f, right error %f", targetRightDist, right_error);
 	left_lastError = left_error;
 	if(abs(left_error)<=1&&abs(left_der)<=1)
 	{
@@ -433,7 +432,7 @@ else if (vexRT[Btn6U] == 1 && !softStopTop)
 	//armPresets();
 	//Intake control
 
-	if (vexRT[Btn7D] == 1)
+	if (vexRT[Btn7U] == 1)
 	{
 		SensorValue[solenoid] = 1;
 
@@ -445,17 +444,17 @@ else if (vexRT[Btn6U] == 1 && !softStopTop)
 		SensorValue[solenoid] = 0;
 
 	}
-	if (vexRT[Btn7U] == 1)
+	if (vexRT[Btn7D] == 1)
 	{
 		SensorValue[solenoid] = 0;
 	}
 
-	if (vexRT[Btn5U]== 1)
+	if (vexRT[Btn5D]== 1)
 	{
 		motor[IR]=-127;
 		motor[IL]=-127;
 	}
-	else if (vexRT[Btn5D] == 1)
+	else if (vexRT[Btn5U] == 1)
 	{
 		motor[IR]=127;
 		motor[IL]=127;
@@ -534,7 +533,7 @@ void dropSmallPoleRed()
 {
 	startTask(arm);
 	startTask(driveBasePID);
-	drivePID(-13,-30);
+	drivePID(-10,-25);
 	moveArmAuton(55,55);
 	wait1Msec(2000);
 	autonIntake(-127,-127);
@@ -551,7 +550,7 @@ void dropSmallPoleBlue()
 {
 	startTask(arm);
 	startTask(driveBasePID);
-	drivePID(-25,-15);
+	drivePID(-17,-10);
 	wait1Msec(1000);
 	//drivePID(-50,-50);
 	moveArmAuton(50,50);
@@ -559,12 +558,11 @@ void dropSmallPoleBlue()
 	autonIntake(-127,-127);
 	wait1Msec(2000);
 	autonIntake(0,0);
-	drivePID(-40,-40);
 	stopTask(arm);
 	stopTask(driveBasePID);
 
 	//motor[LB]=motor[LF]=motor[RB]=motor[RF]=0;
-	 //Vidur said he wont get mad if motors dont run later 11/3/14
+
 }
 task stopAll()
 {
@@ -594,8 +592,7 @@ void dropMediumPoleRedSky()
 	moveArmAuton(80,80);
 	wait1Msec(4000);
 	drivePID(18,27);
-wait1Msec(2000);
-
+	wait1Msec(2000);
 	autonIntake(-127,-127);
 }
 
@@ -720,7 +717,7 @@ void lineSensorNonSky()//Run in a while loop
 
 	/* if (SensorValue(sideLeft) < threshold)
 	{
-		setDrivePower(-127, 127);
+		setDrivePower(-127, 12d7);
 		keepTurning = true;
 		while (keepTurning)
 		{
@@ -742,16 +739,28 @@ void lineSensorNonSky()//Run in a while loop
 
 task autonomous()
 {
-	resetEncoders();
-	//startTask(driveBasePID);
+	//resetEncoders();
+	//startTask(driveBasePID);r
+
 	motor[RF]=+127;
   motor[RB]=-127;
   motor[LB]=motor[LF]=+127;
   wait1Msec(2000);
   motor[RF]=0;
   motor[RB]=0;
+  motor[LB]=motor[LF]=0;/*
+  	startTask(arm);
+		startTask(driveBasePID);
+		resetEncoders();
+	dropSmallPoleBlue();
+	motor[RF]=-127;
+  motor[RB]=+127;
+  motor[LB]=motor[LF]=-127;
+  wait1Msec(500);
+  motor[RF]=0;
+  motor[RB]=0;
   motor[LB]=motor[LF]=0;
-	// Remove this function call once you have "real" code.
+	// Remove this function call once you have "real" code.*/
 }
 
 task usercontrol()
@@ -774,11 +783,25 @@ task usercontrol()
 
 	if (vexRT[Btn8D])
 	{
-		while(true)
-		{
-			lineSensorNonSky();
-		}
-	}
+	/*	startTask(arm);
+		startTask(driveBasePID);
+		drivePID(100,100);
+		wait1Msec(15000);
+		stopTask(arm);
+		stopTask(driveBasePID);*/
+	startTask(arm);
+		startTask(driveBasePID);
+		resetEncoders();
+	dropSmallPoleBlue();
+	motor[RF]=-127;
+  motor[RB]=+127;
+  motor[LB]=motor[LF]=-127;
+  wait1Msec(500);
+  motor[RF]=0;
+  motor[RB]=0;
+  motor[LB]=motor[LF]=0;
+}
+
 		drive();
 		/*if(vexRT[Btn7D])
 		{
@@ -799,8 +822,5 @@ task usercontrol()
 			( H | I ) ( V | I | D | U | R )
 			 \_/ \_/   \_/ \_/ \_/ \_/ \_/
 		*/
-		leftArmAngle = getLeftArm();
-		rightArmAngle = getRightArm();
-		writeDebugStreamLine("Left: %f, Right: %f",  getLeftArm(), getRightArm());
 	}
 }
