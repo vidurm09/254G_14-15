@@ -33,8 +33,8 @@ task drivePID() {
 }
 
 void driveTicks(float ticksL, float ticksR) {
-	driveSetRPt = SensorValue[rDriveEncoder] + ticksR;
-	driveSetLPt = SensorValue[lDriveEncoder] + ticksL;
+	driveSetRPt += ticksR;
+	driveSetLPt += ticksL;
 }
 
 void driveInches(float inches) {
