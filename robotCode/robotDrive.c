@@ -32,12 +32,12 @@ task drivePID() {
 	}
 }
 
-void driveTicks(float ticks) {
-	driveSetRPt += ticks;
-	driveSetLPt += ticks;
+void driveTicks(float ticksL, float ticksR) {
+	driveSetRPt = SensorValue[rDriveEncoder] + ticksR;
+	driveSetLPt = SensorValue[lDriveEncoder] + ticksL;
 }
 
-void turnTicks(float ticks) {
-	driveSetRPt -= ticks;
-	driveSetLPt += ticks;
+void driveInches(float inches) {
+	float ticks = (360*inches)/(PI*4);
+	driveTicks(ticks, ticks);
 }

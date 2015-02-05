@@ -33,3 +33,7 @@ task armPID() {
 		}
 	}
 }
+
+void setArm(float deg) {
+	liftStPt = deg;
+}
