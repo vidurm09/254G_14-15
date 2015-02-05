@@ -1,5 +1,5 @@
 //Clear all encoder values
-void init() {
+void resentEncoder() {
 	SensorValue[rLiftEncoder] = 0;
 	SensorValue[lLiftEncoder] = 0;
 	SensorValue[rDriveEncoder] = 0;
@@ -7,5 +7,5 @@ void init() {
 }
 //All code that will run in user control
 void drive() {
-
+	driveControl(1);//tank - 0, arcade - 1
 }

@@ -41,3 +41,21 @@ void driveInches(float inches) {
 	float ticks = (360*inches)/(PI*4);
 	driveTicks(ticks, ticks);
 }
+//User Control
+void arcade()
+{
+	motor[driveRB] = motor[driveRF] = (vexRT[Ch3] - vexRT[Ch1]);
+	motor[driveLB] = motor[driveLF] = (vexRT[Ch3] + vexRT[Ch1]);
+}
+void tank()
+{
+	motor[driveRB] = motor[driveRF] = vexRT[Ch2];
+	motor[driveLB] = motor[driveLF] = vexRT[Ch3];
+}
+void driveControl(int drive) { //0 - tank, 1 - arcade)
+	if(drive == 0) {
+		tank();
+	} else if(drive == 1) {
+		arcade();
+	}
+}
