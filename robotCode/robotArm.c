@@ -17,7 +17,6 @@ float liftSetPt = 0;
 int lLiftModifier = -1;
 float lastLiftSetPt = 0;
 
-
 task armPID() {
 	int armKp = 0; //Need to set
 	int armKi = 0; //Need to set
@@ -43,23 +42,43 @@ void setArm(float deg) {
 	liftSetPt = -deg;
 }
 
-bool armStop() {
-	return (liftDetectLeft || liftDetectRight);
+bool armStopBottom() {
+	return (SensorValue[liftDetectLeftBottom] || SensorValue[liftDetectRightBottom]);
+}
+
+bool armStopTop() {
+	return (SensorValue[liftDetectLeftTop] || SensorValue[liftDetectRightTop]);
+}
+
+void intakeSet(float po) {
+	motor[intakeL] = -po;
+	motor[intakeR] = po;
+}
+
+void intakeControl() {
+	if(vexRT[Btn5U])
+		intakeSet(127);
+	else if(vexRT[Btn5D])
+		intakeSet(-127);
+	else
+		intakeSet(0);
 }
 
 void armControl() {
 	precisionMode = vexRT[Btn8D] ? 8 : 1;
-	if(vexRT[Btn6D] && !armStop()) {
+	if(vexRT[Btn6D] && !armStopBottom()) {
 		setArm(SensorValue[rLiftEncoder] - 40/precisionMode);
-	} else if(vexRT[Btn6U]) {
+	} else if(vexRT[Btn6U] && !armStopTop()) {
 		setArm(SensorValue[rLiftEncoder] + 40/precisionMode);
-	} else if(vexRT[Btn8DXmtr2]) {
+	} else if(vexRT[Btn8DXmtr2] && !armStopBottom() && !armStopTop()) {
 		setArm(post[0]);
-	} else if(vexRT[Btn8LXmtr2]) {
+	} else if(vexRT[Btn8LXmtr2] && !armStopBottom() && !armStopTop()) {
 		setArm(post[1]);
-	} else if(vexRT[Btn8RXmtr2]) {
+	} else if(vexRT[Btn8RXmtr2] && !armStopBottom() && !armStopTop()) {
 		setArm(post[2]);
-	} else if(vexRT[Btn5UXmtr2]) {
+	} else if(vexRT[Btn8RXmtr2] && !armStopBottom() && !armStopTop()) {
+		setArm(0);
+	} else if(vexRT[Btn5UXmtr2] && !armStopBottom() && !armStopTop()) {
 		setArm(skyrise[skyriseIndex]);
 		skyriseIndex++;
   } else {
