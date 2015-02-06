@@ -25,10 +25,10 @@
 #pragma systemFile
 
 #include "Vex_Competition_Includes.c"
-#include "robotGeneral.c"
 #include "robotDrive.c"
 #include "robotArm.c"
 #include "robotAuto.c"
+#include "robotGeneral.c"
 
 void pre_auton()
 {
