@@ -1,4 +1,8 @@
+#pragma systemFile
 int precisionMode = 0;
+const int skyrise[7] = {1, 2, 3, 4, 5, 6, 7}; //skyrise deg values Need to set
+const int post[3] = {1, 2, 3};
+int skyriseIndex = 0;
 //PID code
 bool toArmStream = false;
 float rAPrevError = 0;
@@ -12,6 +16,7 @@ float rADerivative;
 float liftSetPt = 0;
 int lLiftModifier = -1;
 float lastLiftSetPt = 0;
+
 
 task armPID() {
 	int armKp = 0; //Need to set
@@ -35,5 +40,29 @@ task armPID() {
 }
 
 void setArm(float deg) {
-	liftStPt = deg;
+	liftSetPt = -deg;
+}
+
+bool armStop() {
+	return (liftDetectLeft || liftDetectRight);
+}
+
+void armControl() {
+	precisionMode = vexRT[Btn8D] ? 8 : 1;
+	if(vexRT[Btn6D] && !armStop()) {
+		setArm(SensorValue[rLiftEncoder] - 40/precisionMode);
+	} else if(vexRT[Btn6U]) {
+		setArm(SensorValue[rLiftEncoder] + 40/precisionMode);
+	} else if(vexRT[Btn8DXmtr2]) {
+		setArm(post[0]);
+	} else if(vexRT[Btn8LXmtr2]) {
+		setArm(post[1]);
+	} else if(vexRT[Btn8RXmtr2]) {
+		setArm(post[2]);
+	} else if(vexRT[Btn5UXmtr2]) {
+		setArm(skyrise[skyriseIndex]);
+		skyriseIndex++;
+  } else {
+		setArm(SensorValue[rLiftEncoder] + 1);
+	}
 }

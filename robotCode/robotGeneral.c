@@ -1,3 +1,4 @@
+#pragma systemFile
 //Clear all encoder values
 void resentEncoder() {
 	SensorValue[rLiftEncoder] = 0;
