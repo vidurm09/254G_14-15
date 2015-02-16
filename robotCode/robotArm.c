@@ -22,8 +22,8 @@ task armPID() {
 	int armKi = 0; //Need to set
 	int armKd = 0; //Need to set
 	while(true) {
-		rAError = liftSetPt + SensorValue[rigthLift] + lLiftModifier;
-		lAError = liftSetPt - SensorValue[leftLift];
+		rAError = liftSetPt + SensorValue[rLiftEncoder] + lLiftModifier;
+		lAError = liftSetPt - SensorValue[lLiftEncoder];
 		lAIntegral += lAError;
 		rAIntegral += rAError;
 		rADerivative = rAError - rAPrevError;
@@ -43,13 +43,11 @@ void setArm(float deg) {
 }
 
 bool armStopBottom() {
-	return true;
-	//return (SensorValue[liftDetectLeftBottom] || SensorValue[liftDetectRightBottom]);
+	return (SensorValue[liftDetectLeftBottom] || SensorValue[liftDetectRightBottom]);
 }
 
 bool armStopTop() {
-	return true;
-	//return (SensorValue[liftDetectLeftTop] || SensorValue[liftDetectRightTop]);
+	return (SensorValue[liftDetectLeftTop] || SensorValue[liftDetectRightTop]);
 }
 
 void intakeSet(float po) {
@@ -86,8 +84,4 @@ void armControl() {
   } else {
 		setArm(SensorValue[rLiftEncoder] + 1);
 	}
-}
-
-void dumpControl() {
-	SensorValue[dumpTray] = vexRT[Btn7D] ? 1 : 0;
 }
