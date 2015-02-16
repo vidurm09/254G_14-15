@@ -19,7 +19,7 @@ float lastLiftSetPt = 0;
 
 
 task armPID() {
-	int armKp = 0; //Need to set
+	int armKp = 10; //Need to set
 	int armKi = 0; //Need to set
 	int armKd = 0; //Need to set
 	while(true) {
@@ -37,6 +37,39 @@ task armPID() {
 			writeDebugStreamLine("%f, %f,",lAError, rAError);
 		}
 	}
+}
+
+void intakeSet(float po) {
+	motor[intakeL] = -po;
+	motor[intakeR] = po;
+}
+
+void intakeControl() {
+	if(vexRT[Btn5U])
+		intakeSet(127);
+	else if(vexRT[Btn5D])
+		intakeSet(-127);
+	else
+		intakeSet(0);
+}
+
+task dump() {
+	clearTimer(T1);
+	intakeSet(-127);
+	SensorValue[dumpSolenoid] = 1;
+	while(time1[T1] < 3000) {}
+	SensorValue[dumpSolenoid] = 0;
+	intakeSet(0);
+	stopTask(dump);
+
+}
+
+void dumpControl() {
+	/*if(vexRT[Btn7L])
+		startTask(dump);*/
+		SensorValue[dumpSolenoid] = vexRT[Btn7L] ? 1 : 0;
+		if(vexRT[Btn7L])
+			intakeSet(-127);
 }
 
 void setArm(float deg) {
