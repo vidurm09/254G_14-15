@@ -36,8 +36,8 @@ task armPID() {
 		motor[liftRB] = (((armKp*rAError) + (armKi*rAIntegral) + (armKd*rADerivative))) * -1;
 		motor[liftRT] = (((armKp*rAError) + (armKi*rAIntegral) + (armKd*rADerivative))) * -1;
 		if(toArmStream) {
-			if(lastlAError != lAError || lastrAError != rAError) {
-				writeDebugStreamLine("%f, %f,",lAError, rAError);
+			if(true){//lastlAError != lAError || lastrAError != rAError) {
+				writeDebugStreamLine("%f, %f,",liftSetPt, SensorValue[lLiftEncoder]);
 				lastlAError = lAError;
 				lastrAError = rAError;
 			}
@@ -89,10 +89,10 @@ bool armStop() {
 void armControl() {
 	precisionMode = vexRT[Btn8D] ? 1 : 1;
 	if(vexRT[Btn6D]) {
-		setArm(SensorValue[rLiftEncoder] - 40/precisionMode);
+		liftSetPt = SensorValue[lLiftEncoder] - 40;
 	} else if(vexRT[Btn6U]) {
-		setArm(SensorValue[rLiftEncoder] + 80/precisionMode);
-	} else if(vexRT[Btn8DXmtr2]) {
+		liftSetPt = SensorValue[lLiftEncoder] + 40;
+	} /*else if(vexRT[Btn8DXmtr2]) {
 		setArm(post[0]);
 	} else if(vexRT[Btn8LXmtr2]) {
 		setArm(post[1]);
@@ -101,8 +101,8 @@ void armControl() {
 	} else if(vexRT[Btn5UXmtr2]) {
 		setArm(skyrise[skyriseIndex]);
 		skyriseIndex++;
-  } else {
-		setArm(SensorValue[rLiftEncoder] + 1);
+  }*/ else {
+		liftSetPt = SensorValue[lLiftEncoder] + 3;
 	}
 }
 

@@ -48,7 +48,7 @@ task usercontrol()
 	resetEncoder();
 	startTask(armPID);
 	toArmStream = true;
-	while (true)
+	while(true)
 	{
 		drive();
 	}
