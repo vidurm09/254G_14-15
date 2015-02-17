@@ -1,5 +1,5 @@
 #pragma systemFile
-int precisionMode = 0;
+float precisionMode = 1;
 const int skyrise[7] = {1, 2, 3, 4, 5, 6, 7}; //skyrise deg values Need to set
 const int post[3] = {1, 2, 3};
 int skyriseIndex = 0;
@@ -11,6 +11,8 @@ float lAPrevError = 0;
 float lAIntegral = 0;
 float rAError;
 float lAError;
+float lastrAError = 0;
+float lastlAError = 0;
 float lADerivative;
 float rADerivative;
 float liftSetPt = 0;
@@ -19,22 +21,26 @@ float lastLiftSetPt = 0;
 
 
 task armPID() {
-	int armKp = 10; //Need to set
-	int armKi = 0; //Need to set
-	int armKd = 0; //Need to set
+	float armKp = 10.0; //Need to set
+	float armKi = 0.0; //Ned to set
+	float armKd = 0.0; //Neeed to set
 	while(true) {
-		rAError = liftSetPt + SensorValue[rLiftEncoder] + lLiftModifier;
+		rAError = liftSetPt + SensorValue[rLiftEncoder];
 		lAError = liftSetPt - SensorValue[lLiftEncoder];
 		lAIntegral += lAError;
 		rAIntegral += rAError;
 		rADerivative = rAError - rAPrevError;
 		lADerivative = lAError - lAPrevError;
-		motor[liftLB] = ((armKp*lAError) + (armKi*lAIntegral) + (armKd*lADerivative))/precisionMode;
-		motor[liftLT] = ((armKp*lAError) + (armKi*lAIntegral) + (armKd*lADerivative))/precisionMode;
-		motor[liftRB] = ((armKp*rAError) + (armKi*rAIntegral) + (armKd*rADerivative))/precisionMode;
-		motor[liftRT] = ((armKp*rAError) + (armKi*rAIntegral) + (armKd*rADerivative))/precisionMode;
+		motor[liftLB] = (((armKp*lAError) + (armKi*lAIntegral) + (armKd*lADerivative))) * -1;
+		motor[liftLT] = (((armKp*lAError) + (armKi*lAIntegral) + (armKd*lADerivative))) * -1;
+		motor[liftRB] = (((armKp*rAError) + (armKi*rAIntegral) + (armKd*rADerivative))) * -1;
+		motor[liftRT] = (((armKp*rAError) + (armKi*rAIntegral) + (armKd*rADerivative))) * -1;
 		if(toArmStream) {
-			writeDebugStreamLine("%f, %f,",lAError, rAError);
+			if(lastlAError != lAError || lastrAError != rAError) {
+				writeDebugStreamLine("%f, %f,",lAError, rAError);
+				lastlAError = lAError;
+				lastrAError = rAError;
+			}
 		}
 	}
 }
@@ -73,7 +79,7 @@ void dumpControl() {
 }
 
 void setArm(float deg) {
-	liftSetPt = -deg;
+	liftSetPt = deg;
 }
 
 bool armStop() {
@@ -81,11 +87,11 @@ bool armStop() {
 }
 
 void armControl() {
-	precisionMode = vexRT[Btn8D] ? 8 : 1;
-	if(vexRT[Btn6D] && !armStop()) {
+	precisionMode = vexRT[Btn8D] ? 1 : 1;
+	if(vexRT[Btn6D]) {
 		setArm(SensorValue[rLiftEncoder] - 40/precisionMode);
 	} else if(vexRT[Btn6U]) {
-		setArm(SensorValue[rLiftEncoder] + 40/precisionMode);
+		setArm(SensorValue[rLiftEncoder] + 80/precisionMode);
 	} else if(vexRT[Btn8DXmtr2]) {
 		setArm(post[0]);
 	} else if(vexRT[Btn8LXmtr2]) {
@@ -97,5 +103,26 @@ void armControl() {
 		skyriseIndex++;
   } else {
 		setArm(SensorValue[rLiftEncoder] + 1);
+	}
+}
+
+void armDumbControl() {
+	if(vexRT[Btn6U]) {
+		motor[liftLB] = 127;
+		motor[liftLT] = 127;
+		motor[liftRB] = 127;
+		motor[liftRT] = 127;
+	}
+	else if(vexRT[Btn6D]) {
+		motor[liftLB] = -127;
+		motor[liftLT] = -127;
+		motor[liftRB] = -127;
+		motor[liftRT] = -127;
+	}
+	else {
+		motor[liftLB] = 0;
+		motor[liftLT] = 0;
+		motor[liftRB] = 0;
+		motor[liftRT] = 0;
 	}
 }

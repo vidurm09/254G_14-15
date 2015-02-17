@@ -10,6 +10,7 @@ void resetEncoder() {
 void drive() {
 	driveControl(1);//tank - 0, arcade - 1
 	armControl();
+	//armDumbControl();
 	intakeControl();
 	dumpControl();
 }
