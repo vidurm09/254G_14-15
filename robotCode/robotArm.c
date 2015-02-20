@@ -18,8 +18,8 @@ float rADerivative;
 float liftSetPt = 0;
 int lLiftModifier = -1;
 float lastLiftSetPt = 0;
-
-
+int previousLiftSetPt = 0;
+bool armLoop = false;
 task armPID() {
 	float armKp = 10.0; //Need to set
 	float armKi = 0.0; //Ned to set
@@ -102,10 +102,35 @@ void armControl() {
 		setArm(skyrise[skyriseIndex]);
 		skyriseIndex++;
   }*/ else {
-		liftSetPt = SensorValue[lLiftEncoder] + 3;
+  	startTask(armPID);
+		liftSetPt = SensorValue[lLiftEncoder];
 	}
 }
-
+void armSmartControl() {
+	if(vexRT[Btn6U]) {
+		stopTask(armPID);
+		motor[liftLB] = 127;
+		motor[liftLT] = 127;
+		motor[liftRB] = 127;
+		motor[liftRT] = 127;
+		armLoop = false;
+	}
+	else if(vexRT[Btn6D]) {
+		stopTask(armPID);
+		motor[liftLB] = -127;
+		motor[liftLT] = -127;
+		motor[liftRB] = -127;
+		motor[liftRT] = -127;
+		armLoop = false;
+	}
+	else {
+		startTask(armPID);
+		if(!armLoop) {
+			liftSetPt = SensorValue[lLiftEncoder];
+		}
+		armLoop = true;
+	}
+}
 void armDumbControl() {
 	if(vexRT[Btn6U]) {
 		motor[liftLB] = 127;
