@@ -21,35 +21,18 @@
 
 #pragma platform(VEX)
 
-#pragma competitionControl(Competition)
-#pragma autonomousDuration(20)
-#pragma userControlDuration(120)
 #pragma systemFile
 
-#include "Vex_Competition_Includes.c"
 #include "robotDrive.c"
 #include "robotArm.c"
 #include "robotAuto.c"
 #include "robotGeneral.c"
 
-
-void pre_auton()
-{
-	bStopTasksBetweenModes = true;
-}
-//Autonomous task
-task autonomous()
-{
-	auto();
-}
-//User control task
-task usercontrol()
+task main()
 {
 	resetEncoder();
 	startTask(armPID);
 	toArmStream = true;
+	liftSetPt = 45;
 	while(true)
-	{
-			drive();
-	}
 }

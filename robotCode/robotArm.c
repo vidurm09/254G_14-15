@@ -36,8 +36,8 @@ task armPID() {
 		motor[liftRB] = (((armKp*rAError) + (armKi*rAIntegral) + (armKd*rADerivative))) * -1;
 		motor[liftRT] = (((armKp*rAError) + (armKi*rAIntegral) + (armKd*rADerivative))) * -1;
 		if(toArmStream) {
-			if(true){//lastlAError != lAError || lastrAError != rAError) {
-				writeDebugStreamLine("%f, %f,",liftSetPt, SensorValue[lLiftEncoder]);
+			if(lastlAError != lAError || lastrAError != rAError) {
+				writeDebugStreamLine("%f, %f, %f",liftSetPt, SensorValue[lLiftEncoder], -1 * SensorValue[rLiftEncoder]);
 				lastlAError = lAError;
 				lastrAError = rAError;
 			}
@@ -102,8 +102,7 @@ void armControl() {
 		setArm(skyrise[skyriseIndex]);
 		skyriseIndex++;
   }*/ else {
-  	startTask(armPID);
-		liftSetPt = SensorValue[lLiftEncoder];
+		liftSetPt = SensorValue[lLiftEncoder] + 3;
 	}
 }
 void armSmartControl() {
