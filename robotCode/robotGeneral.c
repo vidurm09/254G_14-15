@@ -9,8 +9,8 @@ void resetEncoder() {
 //All code that will run in user control
 void drive() {
 	driveControl(1);//tank - 0, arcade - 1
-	armControl();
-	//armDumbControl();
+	//armSmartControl();
+	armDumbControl();
 	intakeControl();
 	dumpControl();
 }

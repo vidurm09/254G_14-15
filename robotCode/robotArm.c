@@ -21,12 +21,12 @@ float lastLiftSetPt = 0;
 int previousLiftSetPt = 0;
 bool armLoop = false;
 task armPID() {
-	float armKp = 10.0; //Need to set
+	float armKp = 20.0; //Need to set
 	float armKi = 0.0; //Ned to set
 	float armKd = 0.0; //Neeed to set
 	while(true) {
 		rAError = liftSetPt + SensorValue[rLiftEncoder];
-		lAError = liftSetPt - SensorValue[lLiftEncoder];
+		lAError = liftSetPt - SensorValue[lLiftEncoder] + 3;
 		lAIntegral += lAError;
 		rAIntegral += rAError;
 		rADerivative = rAError - rAPrevError;
@@ -106,7 +106,7 @@ void armControl() {
 	}
 }
 void armSmartControl() {
-	if(vexRT[Btn6U]) {
+	if(vexRT[Btn6U] /*&& (!liftDetectLeft || !liftDetectRight)*/) {
 		stopTask(armPID);
 		motor[liftLB] = 127;
 		motor[liftLT] = 127;
@@ -114,7 +114,7 @@ void armSmartControl() {
 		motor[liftRT] = 127;
 		armLoop = false;
 	}
-	else if(vexRT[Btn6D]) {
+	else if(vexRT[Btn6D] /*&& (!liftDetectLeft || !liftDetectRight)*/) {
 		stopTask(armPID);
 		motor[liftLB] = -127;
 		motor[liftLT] = -127;
@@ -144,9 +144,9 @@ void armDumbControl() {
 		motor[liftRT] = -127;
 	}
 	else {
-		motor[liftLB] = 0;
-		motor[liftLT] = 0;
-		motor[liftRB] = 0;
-		motor[liftRT] = 0;
+		motor[liftLB] = 15;
+		motor[liftLT] = 15;
+		motor[liftRB] = 15;
+		motor[liftRT] = 15;
 	}
 }

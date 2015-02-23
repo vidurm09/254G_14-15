@@ -46,7 +46,7 @@ task autonomous()
 task usercontrol()
 {
 	resetEncoder();
-	startTask(armPID);
+//	startTask(armPID);
 	toArmStream = true;
 	while(true)
 	{

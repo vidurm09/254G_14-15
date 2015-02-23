@@ -45,13 +45,13 @@ void driveInches(float inches) {
 //User Control
 void arcade()
 {
-	motor[driveRB] = motor[driveRF] = (vexRT[Ch3] - vexRT[Ch1]);
-	motor[driveLB] = motor[driveLF] = (vexRT[Ch3] + vexRT[Ch1]);
+	motor[driveRB] = motor[driveRF] = -(vexRT[Ch3] - vexRT[Ch1]);
+	motor[driveLB] = motor[driveLF] = -(vexRT[Ch3] + vexRT[Ch1]);
 }
 void tank()
 {
-	motor[driveRB] = motor[driveRF] = vexRT[Ch2];
-	motor[driveLB] = motor[driveLF] = vexRT[Ch3];
+	motor[driveRB] = motor[driveRF] = -vexRT[Ch2];
+	motor[driveLB] = motor[driveLF] = -vexRT[Ch3];
 }
 void driveControl(int drive) { //0 - tank, 1 - arcade)
 	if(drive == 0) {
