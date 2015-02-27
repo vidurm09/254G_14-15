@@ -40,14 +40,17 @@ void pre_auton()
 //Autonomous task
 task autonomous()
 {
-	auto();
+
 }
 //User control task
 task usercontrol()
 {
+	auto();
+}
+/*
 	stopTask(drivePID);
 	while(true)
 	{
 			drive();
 	}
-}
+}*/

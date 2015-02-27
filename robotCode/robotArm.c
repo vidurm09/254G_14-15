@@ -20,7 +20,7 @@ int lLiftModifier = -1;
 float lastLiftSetPt = 0;
 int previousLiftSetPt = 0;
 bool armLoop = false;
-float ignoreError = 40;
+float ignoreError = 10;
 float armMovePo = 127;
 task armPID() {
 	float armKp = 20.0; //Need to set
@@ -92,7 +92,7 @@ void dumpControl() {
 }
 
 float liftHeight() {
-	return (float)(abs((SensorValue[lLiftEncoder] + SensorValue[rLiftEncoder])/2));
+	return (float)(abs((SensorValue[lLiftEncoder])));
 }
 
 void armPow(int po) {
