@@ -53,6 +53,7 @@ void intakeSet(float po) {
 }
 
 void intakeControl() {
+	SensorValue[dumpSolenoid] = vexRT[Btn7L] ? 1 : 0;
 	if(vexRT[Btn5U]) {
 		intakeSet(127);
 	}
@@ -60,7 +61,7 @@ void intakeControl() {
 		intakeSet(-127);
 	}
 	else if(vexRT[Btn7L]) {
-		SensorValue[dumpSolenoid] = vexRT[Btn7L] ? 1 : 0;
+
 		intakeSet(-127);
 	}
 	else {
