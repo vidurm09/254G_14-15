@@ -20,6 +20,8 @@ int lLiftModifier = -1;
 float lastLiftSetPt = 0;
 int previousLiftSetPt = 0;
 bool armLoop = false;
+float ignoreError = 40;
+float armMovePo = 127;
 task armPID() {
 	float armKp = 20.0; //Need to set
 	float armKi = 0.0; //Ned to set
@@ -51,12 +53,19 @@ void intakeSet(float po) {
 }
 
 void intakeControl() {
-	if(vexRT[Btn5U])
+	if(vexRT[Btn5U]) {
 		intakeSet(127);
-	else if(vexRT[Btn5D])
+	}
+	else if(vexRT[Btn5D]) {
 		intakeSet(-127);
-	else
+	}
+	else if(vexRT[Btn7L]) {
+		SensorValue[dumpSolenoid] = vexRT[Btn7L] ? 1 : 0;
+		intakeSet(-127);
+	}
+	else {
 		intakeSet(0);
+	}
 }
 
 task dump() {
@@ -71,19 +80,50 @@ task dump() {
 }
 
 void dumpControl() {
-	/*if(vexRT[Btn7L])
-		startTask(dump);*/
+	if(vexRT[Btn7L])
+		//startTask(dump);
 		SensorValue[dumpSolenoid] = vexRT[Btn7L] ? 1 : 0;
-		if(vexRT[Btn7L])
-			intakeSet(-127);
+		//intakeSet(-127);
+	else
+		intakeSet(0);
+		//if(vexRT[Btn7L])
+			//intakeSet(-127);
+}
+
+float liftHeight() {
+	return (float)(abs((SensorValue[lLiftEncoder] + SensorValue[rLiftEncoder])/2));
+}
+
+void armPow(int po) {
+	motor[liftLB] = po;
+	motor[liftLT] = po;
+	motor[liftRB] = po;
+	motor[liftRT] = po;
+}
+
+bool armStop() {
+	return (liftDetectLeft || liftDetectRight);
+}
+
+task armController() {
+	while(true) {
+		while(abs(liftSetPt - liftHeight()) > ignoreError) {
+			if(liftSetPt > liftHeight())
+				armPow(armMovePo);
+			else if(liftSetPt < liftHeight())
+				armPow(-armMovePo);
+		}
+		armPow(15);
+	}
 }
 
 void setArm(float deg) {
 	liftSetPt = deg;
 }
 
-bool armStop() {
-	return (liftDetectLeft || liftDetectRight);
+void zeroArm(float po = -100) {
+	while(!armStop())
+		armPow(po);
 }
 
 void armControl() {
@@ -131,22 +171,10 @@ void armSmartControl() {
 	}
 }
 void armDumbControl() {
-	if(vexRT[Btn6U]) {
-		motor[liftLB] = 127;
-		motor[liftLT] = 127;
-		motor[liftRB] = 127;
-		motor[liftRT] = 127;
-	}
-	else if(vexRT[Btn6D]) {
-		motor[liftLB] = -127;
-		motor[liftLT] = -127;
-		motor[liftRB] = -127;
-		motor[liftRT] = -127;
-	}
-	else {
-		motor[liftLB] = 15;
-		motor[liftLT] = 15;
-		motor[liftRB] = 15;
-		motor[liftRT] = 15;
-	}
+	if(vexRT[Btn6U])
+		armPow(127);
+	else if(vexRT[Btn6D])
+		armPow(-127);
+	else
+		armPow(15);
 }

@@ -12,5 +12,5 @@ void drive() {
 	//armSmartControl();
 	armDumbControl();
 	intakeControl();
-	dumpControl();
+	//dumpControl();
 }
