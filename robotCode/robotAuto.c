@@ -1,14 +1,13 @@
 #pragma systemFile
 //All code that will run in Auto
-void auto() {
-}
+
 
 void redSkyrise() {
 
 }
 
 void redPost() {
-
+	setArm(30);
 }
 
 void blueSkyrise() {
@@ -17,4 +16,11 @@ void blueSkyrise() {
 
 void bluePost() {
 
+}
+
+void auto() {
+	resetEncoder();
+	startTask(armController);
+	startTask(drivePID);
+	redPost();
 }

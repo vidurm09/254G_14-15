@@ -29,8 +29,8 @@
 #include "Vex_Competition_Includes.c"
 #include "robotDrive.c"
 #include "robotArm.c"
-#include "robotAuto.c"
 #include "robotGeneral.c"
+#include "robotAuto.c"
 
 
 void pre_auton()
@@ -45,9 +45,7 @@ task autonomous()
 //User control task
 task usercontrol()
 {
-	resetEncoder();
-//	startTask(armPID);
-	toArmStream = true;
+	stopTask(drivePID);
 	while(true)
 	{
 			drive();

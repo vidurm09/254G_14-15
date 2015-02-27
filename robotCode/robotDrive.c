@@ -1,6 +1,6 @@
 #pragma systemFile
 float ignoreDriveError = 40;
-float driveKp = 1.5;
+float driveKp = 10.5;
 float driveKi = 0.0;
 float driveKd = 0.0;
 bool toDriveStream = false;
@@ -34,10 +34,14 @@ task drivePID() {
 }
 
 void driveTicks(float ticksL, float ticksR) {
-	driveSetRPt += ticksR;
-	driveSetLPt += ticksL;
+	driveSetRPt -= ticksR;
+	driveSetLPt -= ticksL;
 }
 
+void driveSTicks(float ticksA) {
+	driveSetRPt -= ticksA;
+	driveSetLPt -= ticksA;
+}
 void driveInches(float inches) {
 	float ticks = (360*inches)/(PI*4);
 	driveTicks(ticks, ticks);
