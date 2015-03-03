@@ -3,6 +3,7 @@ float precisionMode = 1;
 const int skyrise[7] = {1, 2, 3, 4, 5, 6, 7}; //skyrise deg values Need to set
 const int post[3] = {1, 2, 3};
 int skyriseIndex = 0;
+bool toSet = true;
 //PID code
 bool toArmStream = false;
 float rAPrevError = 0;
@@ -10,6 +11,7 @@ float rAIntegral = 0;
 float lAPrevError = 0;
 float lAIntegral = 0;
 float rAError;
+
 float lAError;
 float lastrAError = 0;
 float lastlAError = 0;
@@ -53,14 +55,14 @@ void intakeSet(float po) {
 }
 
 void intakeControl() {
-	SensorValue[dumpSolenoid] = vexRT[Btn7L] ? 1 : 0;
+	SensorValue[dumpSolenoid] = vexRT[Btn8L] ? 1 : 0;
 	if(vexRT[Btn5U]) {
 		intakeSet(127);
 	}
 	else if(vexRT[Btn5D]) {
 		intakeSet(-127);
 	}
-	else if(vexRT[Btn7L]) {
+	else if(vexRT[Btn8L]) {
 
 		intakeSet(-127);
 	}
@@ -112,7 +114,7 @@ task armController() {
 			if(liftSetPt > liftHeight())
 				armPow(armMovePo);
 			else if(liftSetPt < liftHeight())
-				armPow(-armMovePo);
+				armPow(-60);
 		}
 		armPow(15);
 	}
@@ -172,10 +174,24 @@ void armSmartControl() {
 	}
 }
 void armDumbControl() {
-	if(vexRT[Btn6U])
-		armPow(127);
-	else if(vexRT[Btn6D])
-		armPow(-127);
-	else
-		armPow(15);
+	ignoreError = 3;
+	if(vexRT[Btn8U]) {
+		liftSetPt = 153;
+	}
+	else if(vexRT[Btn8R]) {
+		liftSetPt = 101;
+	}
+	else if(vexRT[Btn8D]) {
+		liftSetPt = 66;
+	}
+	else if(vexRT[Btn6U]) {
+		//armPow(127);
+		liftSetPt = SensorValue[lLiftEncoder] + 40;
+	}
+	else if(vexRT[Btn6D]) {
+		//armPow(-60);
+		liftSetPt = SensorValue[lLiftEncoder] - 40;
+	}
+	else if(true)
+		liftSetPt = SensorValue[lLiftEncoder];
 }

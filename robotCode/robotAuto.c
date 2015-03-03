@@ -7,12 +7,19 @@ void redSkyrise() {
 
 void redPost() {
 	//driveSTicks(500);
-	setArm(10);
-	wait10Msec(250);
+
+	/*setArm(30);
 	intakeSet(127);
-	driveSTicks(250);
+	wait1Msec(500);
+	setArm(5);
+	wait1Msec(500);
+	intakeSet(127);
+	driveStraight(180);
 	wait1Msec(1000);
-	//setArm(65);
+	//setArm(65);*/
+	//driveStraight(180);
+	driveStraight(-360);
+	driveStraight(720);
 }
 
 void blueSkyrise() {
@@ -26,7 +33,7 @@ void bluePost() {
 void auto() {
 	resetEncoder();
 	startTask(armController);
-	startTask(drivePID);
+	//startTask(drivePID);
 	redPost();
-	stopTask(drivePID);
+	//stopTask(drivePID);
 }
