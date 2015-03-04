@@ -23,11 +23,15 @@ void redPost() {
 	wait1Msec(500);
 	setArm(5);
 	wait1Msec(500);
-	driveStraight(620);
-	setArm(135);
+	driveStraight(570);
+	setArm(117);
 	wait1Msec(3000);
 	setLeftTicks(675);
-
+	setLeftPo(127);
+	setRightPo(127);
+	wait1Msec(500);
+	SensorValue[lDriveEncoder] = 0;
+	driveStraight(-30);
 }
 
 void blueSkyrise() {
