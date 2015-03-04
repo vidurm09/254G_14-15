@@ -17,9 +17,17 @@ void redPost() {
 	driveStraight(180);
 	wait1Msec(1000);
 	//setArm(65);*/
-	//driveStraight(180);
-	driveStraight(-360);
-	driveStraight(720);
+	//driveStraig(127ht(180);
+	setArm(30);
+	intakeSet(127);
+	wait1Msec(500);
+	setArm(5);
+	wait1Msec(500);
+	driveStraight(620);
+	setArm(135);
+	wait1Msec(3000);
+	setLeftTicks(675);
+
 }
 
 void blueSkyrise() {

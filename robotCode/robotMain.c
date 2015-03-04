@@ -45,9 +45,11 @@ task autonomous()
 //User control task
 task usercontrol()
 {
-	//startTask(armController);
-	auto();
-	//while(true){drive();}
+	startTask(armController);
+	//liftSetPt = 100;
+//	wait1Msec(10000);
+	//auto();
+	while(true){drive();}
 }
 /*
 	stopTask(drivePID);

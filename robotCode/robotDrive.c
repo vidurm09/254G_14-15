@@ -64,12 +64,12 @@ void setRightTicks(float ticks, float power = 127) {
 }
 
 void driveStraight(float ticks, float power = 127) {
-	int set = SensorValue[rDriveEncoder] - ticks;
-	while(set < SensorValue[rDriveEncoder]) {
+	int set = SensorValue[lDriveEncoder] - ticks;
+	while(set < -SensorValue[lDriveEncoder]) {
 		setRightPo(power);
 		setLeftPo(power);
 	}
-	while(set > SensorValue[rDriveEncoder]) {
+	while(set > -SensorValue[lDriveEncoder]) {
 		setLeftPo(-power);
 		setRightPo(-power);
 	}
