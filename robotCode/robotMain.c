@@ -46,8 +46,8 @@ task autonomous()
 task usercontrol()
 {
 	startTask(armController);
-	//liftSetPt = 125;
-	//wait1Msec(10000);
+	//liftSetPt = 100;
+//	wait1Msec(10000);
 	//auto();
 	while(true){drive();}
 }
