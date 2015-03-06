@@ -48,8 +48,8 @@ task usercontrol()
 	startTask(armController);
 	//liftSetPt = 100;
 //	wait1Msec(10000);
-	//auto();
-	while(true){drive();}
+	auto();
+	//while(true){drive();}
 }
 /*
 	stopTask(drivePID);
