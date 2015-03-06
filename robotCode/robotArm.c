@@ -173,24 +173,31 @@ void armSmartControl() {
 		armLoop = true;
 	}
 }
+
+int preset = 0;
 void armDumbControl() {
 	ignoreError = 3;
-	if(vexRT[Btn8U]) {
-		liftSetPt = 153;
-	}
-	else if(vexRT[Btn8R]) {
-		liftSetPt = 101;
-	}
-	else if(vexRT[Btn8D]) {
-		liftSetPt = 66;
-	}
-	else if(vexRT[Btn6U]) {
+	if(vexRT[Btn6U]) {
 		//armPow(127);
+		preset = 0;
 		liftSetPt = SensorValue[lLiftEncoder] + 40;
 	}
 	else if(vexRT[Btn6D]) {
 		//armPow(-60);
+		preset = 0;
 		liftSetPt = SensorValue[lLiftEncoder] - 40;
+	}
+	else if(vexRT[Btn8U] || preset == 1) {
+		preset = 1;
+		liftSetPt = 153;
+	}
+	else if(vexRT[Btn8R] || preset == 2) {
+		preset = 2;
+		liftSetPt = 101;
+	}
+	else if(vexRT[Btn8D] || preset == 3) {
+		preset = 3;
+		liftSetPt = 66;
 	}
 	else if(true)
 		liftSetPt = SensorValue[lLiftEncoder];
