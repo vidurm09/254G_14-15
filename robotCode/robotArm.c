@@ -187,15 +187,15 @@ void armDumbControl() {
 		preset = 0;
 		liftSetPt = SensorValue[lLiftEncoder] - 40;
 	}
-	else if(vexRT[Btn8U] || preset == 1) {
+	else if(vexRT[Btn7U] || preset == 1) {
 		preset = 1;
 		liftSetPt = 153;
 	}
-	else if(vexRT[Btn8R] || preset == 2) {
+	else if(vexRT[Btn7L] || preset == 2) {
 		preset = 2;
 		liftSetPt = 101;
 	}
-	else if(vexRT[Btn8D] || preset == 3) {
+	else if(vexRT[Btn7D] || preset == 3) {
 		preset = 3;
 		liftSetPt = 66;
 	}
